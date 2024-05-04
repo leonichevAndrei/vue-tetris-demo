@@ -1,12 +1,14 @@
 <script setup lang='ts'>
-import Column from './Column.vue'
 import { useTetrisStore } from '@/stores/tetris';
 const tetrisStore = useTetrisStore();
 </script>
 
 <template>
   <div class='field'>
-    <Column :x="index" v-for="index in tetrisStore.getHeight" />
+    <div class="game-over">
+      <p class="title">GAME OVER</p>
+      <p>Final score: {{ tetrisStore.getScore }}</p>
+    </div>
   </div>
 </template>
 

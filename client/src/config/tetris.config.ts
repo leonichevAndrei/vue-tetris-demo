@@ -1,10 +1,10 @@
 export default {
   width: {
-    min: 10,
-    max: 50
+    min: 20,
+    max: 60
   },
   height: {
     min: 20,
-    max: 100
+    max: 30
   }
 }

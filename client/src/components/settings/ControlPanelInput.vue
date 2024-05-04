@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 
 const props = defineProps(['title', 'range', 'updateStoreFunc']);
 const inputValue = ref(props.range.min.toString());
@@ -9,10 +9,13 @@ function checkAndSetInputValue(event: any) {
   const parsedValue = parseInt(value);
   if (parsedValue.toString() !== value) {
     if (parsedValue >= 0) {
-        inputValue.value = parsedValue.toString();
+      inputValue.value = parsedValue.toString();
     } else {
       inputValue.value = '';
     }
+  }
+  if (parsedValue > props.range.max) {
+    inputValue.value = props.range.max;
   }
 }
 function checkInputOnFocus() {
@@ -20,16 +23,25 @@ function checkInputOnFocus() {
 }
 function checkInputOnBlur() {
   if (inputValue.value == '') {
-    inputValue.value = '0';
+    inputValue.value = props.range.min;
   } else {
     const parsedValue = parseInt(inputValue.value);
-    if (parsedValue < props.range.min) {
-      inputValue.value = props.range.min;
-    } else if (parsedValue > props.range.max) {
-      inputValue.value = props.range.max;
-    }
+    checkMinMax(parsedValue);
   }
 }
+function checkMinMax(parsedValue: number) {
+  if (parsedValue < props.range.min) {
+    inputValue.value = props.range.min;
+  } else if (parsedValue > props.range.max) {
+    inputValue.value = props.range.max;
+  }
+}
+
+watch(inputValue, (newInputValue) => {
+  if (newInputValue >= props.range.min) {
+    props.updateStoreFunc(parseInt(newInputValue));
+  }
+})
 </script>
 
 <template>

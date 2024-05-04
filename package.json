@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@typescript-eslint/parser": "^7.7.1",
+    "@vitejs/plugin-vue": "^5.0.4"
+  }
+}

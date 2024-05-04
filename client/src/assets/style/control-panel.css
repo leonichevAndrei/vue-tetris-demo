@@ -1,0 +1,28 @@
+.control-panel {
+    padding-bottom: 10px;
+    flex-direction: column;
+}
+.control-panel .line {
+    justify-content: center;
+}
+.input-box {
+    flex-direction: column;
+    margin: 5px;
+}
+.menu-item {
+    padding: 10px 10px 0;
+}
+.menu-item button {
+    width: 416px;
+    height: 24px;
+    background-color: rgb(13, 115, 115);
+    border: none;
+    border-radius: 3px;
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+}
+.menu-item button:hover {
+    background-color: rgb(51, 208, 208);
+    color: black;
+}
