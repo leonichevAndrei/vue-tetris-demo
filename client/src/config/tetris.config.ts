@@ -6,5 +6,6 @@ export default {
   height: {
     min: 20,
     max: 30
-  }
+  },
+  fps: 25
 }

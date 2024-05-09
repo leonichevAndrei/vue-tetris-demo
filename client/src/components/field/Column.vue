@@ -7,7 +7,7 @@ const props = defineProps(['x']);
 
 <template>
   <div class="column">
-    <Element :x="props.x" :y="index" v-for="index in tetrisStore.getWidth" />
+    <Element :x="props.x" :y="index-1" v-for="index in tetrisStore.getWidth" />
   </div>
 </template>
 

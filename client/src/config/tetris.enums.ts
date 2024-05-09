@@ -3,5 +3,9 @@ export enum appStateEnum {
 }
 
 export enum gameStateEnum {
-  nothing, movement, cleaning 
+  nothing, birth, movement, collision, cleaning 
+}
+
+export enum generateFieldTypes {
+  filled, empty, random
 }

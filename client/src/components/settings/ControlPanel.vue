@@ -26,7 +26,7 @@ const tetrisStore = useTetrisStore();
       App state: {{ appStateEnum[tetrisStore.getAppState] }}
     </div>
     <div class='line'>
-      Game state: {{ gameStateEnum[tetrisStore.getGameState] }} (steps: {{ tetrisStore.getSteps }})
+      Game state: {{ gameStateEnum[tetrisStore.getGameState] }} (frames: {{ tetrisStore.getFrames }})
     </div>
   </div>
 </template>

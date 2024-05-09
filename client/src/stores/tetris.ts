@@ -1,7 +1,10 @@
 import { defineStore } from "pinia"
 import { computed, ref } from "vue"
 import { appStateEnum, gameStateEnum } from "@/config/tetris.enums";
+import { generateAnyFieldMatrix } from "@/utills/tetris.store.utills";
+import { generateFieldTypes } from "@/config/tetris.enums";
 import conf from '@/config/tetris.config.ts';
+
 
 export const useTetrisStore = defineStore('tetris', () => {
 
@@ -11,7 +14,8 @@ export const useTetrisStore = defineStore('tetris', () => {
   const appState = ref(appStateEnum.init);
   const gameState = ref(gameStateEnum.nothing);
   const score = ref(0);
-  const steps = ref(0);
+  const frames = ref(0);
+  const fieldMatrix = ref(new Array());
 
   // GETTERS:
   const getWidth = computed(() => width.value);
@@ -21,8 +25,9 @@ export const useTetrisStore = defineStore('tetris', () => {
   const getGameStateRef = () => gameState;
   const getGameState = computed(() => gameState.value);
   const getScore = computed(() => score.value);
-  const getStepsRef = () => steps;
-  const getSteps = computed(() => steps.value);
+  const getFramesRef = () => frames;
+  const getFrames = computed(() => frames.value);
+  const getFieldMatrixRef = () => fieldMatrix;
 
   // ACTIONS:
   function setWidth(newValue: number) {
@@ -34,7 +39,7 @@ export const useTetrisStore = defineStore('tetris', () => {
   function setAppState(newState: appStateEnum) {
     appState.value = newState;
     if (appStateEnum[newState] == 'runned') {
-      setGameState(gameStateEnum.movement);
+      setGameState(gameStateEnum.birth);
     } else {
       setGameState(gameStateEnum.nothing);
     }
@@ -48,11 +53,17 @@ export const useTetrisStore = defineStore('tetris', () => {
   function resetGameScore() { 
     score.value = 0 
   }
-  function updateSteps() {
-    steps.value += 1;
+  function updateFrames() {
+    frames.value += 1;
   }
-  function resetSteps() {
-    steps.value = 0;
+  function resetFrames() {
+    frames.value = 0;
+  }
+  function createFieldMatrix() {
+    fieldMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']);
+  }
+  function createRandomFieldMatrix() {
+    fieldMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['random']);
   }
 
   return { 
@@ -63,15 +74,18 @@ export const useTetrisStore = defineStore('tetris', () => {
     getGameStateRef,
     getGameState,
     getScore,
-    getStepsRef,
-    getSteps,
+    getFramesRef,
+    getFrames,
+    getFieldMatrixRef,
     setWidth,
     setHeight,
     setAppState,
     setGameState,
     updateGameScore,
     resetGameScore,
-    updateSteps,
-    resetSteps
+    updateFrames,
+    resetFrames,
+    createFieldMatrix,
+    createRandomFieldMatrix
   }
 });

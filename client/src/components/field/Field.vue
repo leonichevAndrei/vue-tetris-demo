@@ -6,7 +6,7 @@ const tetrisStore = useTetrisStore();
 
 <template>
   <div class='field'>
-    <Column :x="index" v-for="index in tetrisStore.getHeight" />
+    <Column :x="index-1" v-for="index in tetrisStore.getHeight" />
   </div>
 </template>
 
