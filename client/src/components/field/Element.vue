@@ -6,12 +6,9 @@ const tetrisStore = useTetrisStore();
 const props = defineProps(['x', 'y']);
 
 const elmStatus = computed(() => {
-  if (appStateEnum[tetrisStore.getAppState] == 'runned') {
-    if (tetrisStore.getFieldMatrixRef().value[props.x][props.y] == 0) {
-      return 'elm_empty';
-    } else {
-      return 'elm_filled';
-    }
+  if (tetrisStore.getFieldMatrixRef().value[props.x] !== undefined 
+    && tetrisStore.getFieldMatrixRef().value[props.x][props.y] == 0) {
+    return 'elm_empty';
   } else {
     return 'elm_filled';
   }
@@ -20,7 +17,6 @@ const elmStatus = computed(() => {
 
 <template>
   <div :class='["element", elmStatus]'>
-  <!-- {{ props.x }}.{{ props.y }} -->
   </div>
 </template>
 

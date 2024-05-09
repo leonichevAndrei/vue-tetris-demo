@@ -7,5 +7,5 @@ export default {
     min: 20,
     max: 30
   },
-  fps: 25
+  fps: 2
 }

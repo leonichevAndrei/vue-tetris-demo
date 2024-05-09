@@ -15,11 +15,13 @@ export const useTetrisStore = defineStore('tetris', () => {
   const gameState = ref(gameStateEnum.nothing);
   const score = ref(0);
   const frames = ref(0);
-  const fieldMatrix = ref(new Array());
+  const fieldMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['filled']));
 
   // GETTERS:
   const getWidth = computed(() => width.value);
+  const getWidthRef = () => width;
   const getHeight = computed(() => height.value);
+  const getHeightRef = () => height;
   const getAppStateRef = () => appState;
   const getAppState = computed(() => appState.value);
   const getGameStateRef = () => gameState;
@@ -30,11 +32,13 @@ export const useTetrisStore = defineStore('tetris', () => {
   const getFieldMatrixRef = () => fieldMatrix;
 
   // ACTIONS:
-  function setWidth(newValue: number) {
-    width.value = newValue;
+  function setWidth(newWidth: number) {
+    generateAnyFieldMatrix(newWidth, height.value, generateFieldTypes['filled']);
+    width.value = newWidth;
   }
-  function setHeight(newValue: number) {
-    height.value = newValue;
+  function setHeight(newHeight: number) {
+    generateAnyFieldMatrix(width.value, newHeight, generateFieldTypes['filled']);
+    height.value = newHeight;
   }
   function setAppState(newState: appStateEnum) {
     appState.value = newState;
@@ -59,16 +63,15 @@ export const useTetrisStore = defineStore('tetris', () => {
   function resetFrames() {
     frames.value = 0;
   }
-  function createFieldMatrix() {
-    fieldMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']);
-  }
-  function createRandomFieldMatrix() {
-    fieldMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['random']);
+  function createAnyFieldMatrix(generateFieldType: generateFieldTypes) {
+    fieldMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldType);
   }
 
   return { 
     getWidth, 
+    getWidthRef, 
     getHeight,
+    getHeightRef,
     getAppStateRef,
     getAppState,
     getGameStateRef,
@@ -85,7 +88,6 @@ export const useTetrisStore = defineStore('tetris', () => {
     resetGameScore,
     updateFrames,
     resetFrames,
-    createFieldMatrix,
-    createRandomFieldMatrix
+    createAnyFieldMatrix
   }
 });

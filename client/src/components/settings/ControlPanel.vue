@@ -10,8 +10,8 @@ const tetrisStore = useTetrisStore();
 <template>
   <div class='control-panel'>
     <div v-if="appStateEnum[tetrisStore.getAppState]=='init'" class='line'>
-      <ControlPanelInput title='Width' :range="conf.width" :updateStoreFunc="tetrisStore.setWidth" />
-      <ControlPanelInput title='Height' :range="conf.height" :updateStoreFunc="tetrisStore.setHeight" />
+      <ControlPanelInput title='Width' :range="conf.width" :value="tetrisStore.getWidth" :updateStoreFunc="tetrisStore.setWidth" />
+      <ControlPanelInput title='Height' :range="conf.height" :value="tetrisStore.getHeight" :updateStoreFunc="tetrisStore.setHeight" />
     </div>
     <div v-if="appStateEnum[tetrisStore.getAppState]=='init'" class='line'>
       <ControlPanelButton title='Start Game' :appState='appStateEnum.runned' />

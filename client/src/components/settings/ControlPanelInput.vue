@@ -1,8 +1,8 @@
 <script setup lang='ts'>
 import { ref, watch } from 'vue';
 
-const props = defineProps(['title', 'range', 'updateStoreFunc']);
-const inputValue = ref(props.range.min.toString());
+const props = defineProps(['title', 'range', 'value', 'updateStoreFunc']);
+const inputValue = ref(props.value);
 
 function checkAndSetInputValue(event: any) {
   const value = event.target.value;

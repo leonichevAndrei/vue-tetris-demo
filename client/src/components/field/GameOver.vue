@@ -4,11 +4,9 @@ const tetrisStore = useTetrisStore();
 </script>
 
 <template>
-  <div class='field'>
-    <div class="game-over">
-      <p class="title">GAME OVER</p>
-      <p>Final score: {{ tetrisStore.getScore }}</p>
-    </div>
+  <div class="game-over">
+    <p class="title">GAME OVER</p>
+    <p>Final score: {{ tetrisStore.getScore }}</p>
   </div>
 </template>
 
