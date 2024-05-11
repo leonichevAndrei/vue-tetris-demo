@@ -14,6 +14,6 @@ export function generateAnyFieldMatrix(width: number, height: number, generateFi
       matrix[y][x] = result;
     }
   }
-  console.log(matrix);
+  // console.log(matrix);
   return matrix;
 }

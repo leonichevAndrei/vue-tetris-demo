@@ -3,14 +3,14 @@ import { ref, watch, computed } from 'vue';
 import conf from '@/config/tetris.config.ts';
 import ControlPanel from '../components/settings/ControlPanel.vue'
 import Field from '../components/field/Field.vue'
-import { appStateEnum } from '@/config/tetris.enums';
+import { appStateEnum, gameStateEnum } from '@/config/tetris.enums';
 import { useTetrisStore } from '@/stores/tetris';
 import { getMillisecondsByFPS } from '@/utills/common.utills';
 import { generateFieldTypes } from "@/config/tetris.enums";
 const tetrisStore = useTetrisStore();
 
 let templateIdForUpdate = computed(() => 'mainViewId' + tetrisStore.getFramesRef().value);
-let intervalID: number;
+let intervalIdFrames: number;
 const width = ref(tetrisStore.getWidth);
 const height = ref(tetrisStore.getHeight);
 
@@ -27,19 +27,31 @@ watch(tetrisStore.getAppStateRef(), appState => {
     tetrisStore.createAnyFieldMatrix(generateFieldTypes['filled']);
     tetrisStore.resetFrames();
   } else if (appStateEnum[appState] == 'runned') {
-    intervalID = setInterval(() => tetrisStore.updateFrames(), getMillisecondsByFPS(conf.fps));
+    intervalIdFrames = setInterval(() => tetrisStore.updateFrames(), getMillisecondsByFPS(conf.fps));
   } else if (appStateEnum[appState] == 'finished') {
-    clearInterval(intervalID);
+    clearInterval(intervalIdFrames);
     tetrisStore.createAnyFieldMatrix(generateFieldTypes['empty']);
     tetrisStore.updateFrames();
   }
 });
 
-watch(tetrisStore.getFramesRef(), frames => {
-  if (appStateEnum[tetrisStore.getAppState] == 'runned') {
-    tetrisStore.createAnyFieldMatrix(generateFieldTypes['random']);
+watch(tetrisStore.getGameStateRef(), gameState => {
+  if(gameStateEnum[gameState] == 'birth') {
+    tetrisStore.createAnyFieldMatrix(generateFieldTypes['empty']);
+  } else if (gameStateEnum[gameState] == 'movement') {
+
+  } else if (gameStateEnum[gameState] == 'collision') {
+    
+  } else if (gameStateEnum[gameState] == 'cleaning') {
+    
   }
-});
+})
+
+// watch(tetrisStore.getFramesRef(), frames => {
+//   if (appStateEnum[tetrisStore.getAppState] == 'runned') {
+//     tetrisStore.createAnyFieldMatrix(generateFieldTypes['random']);
+//   }
+// });
 </script>
 
 <template>

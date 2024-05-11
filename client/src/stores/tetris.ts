@@ -1,10 +1,11 @@
 import { defineStore } from "pinia"
 import { computed, ref } from "vue"
 import { appStateEnum, gameStateEnum } from "@/config/tetris.enums";
+import { getRandomElementId, getMiddlePosition } from "@/utills/common.utills";
 import { generateAnyFieldMatrix } from "@/utills/tetris.store.utills";
 import { generateFieldTypes } from "@/config/tetris.enums";
+import allElements from '@/assets/elements/all-elms';
 import conf from '@/config/tetris.config.ts';
-
 
 export const useTetrisStore = defineStore('tetris', () => {
 
@@ -16,19 +17,25 @@ export const useTetrisStore = defineStore('tetris', () => {
   const score = ref(0);
   const frames = ref(0);
   const fieldMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['filled']));
+  const elementMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']));
+  const prevElementId = ref(0);
+  const elementId = ref(getRandomElementId(allElements.length, prevElementId.value));
+  const elementCoords = ref([getMiddlePosition(width.value),0]);
+  const elementSpin = ref(0);
+  const staticMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']));
 
   // GETTERS:
   const getWidth = computed(() => width.value);
   const getWidthRef = () => width;
   const getHeight = computed(() => height.value);
   const getHeightRef = () => height;
-  const getAppStateRef = () => appState;
   const getAppState = computed(() => appState.value);
-  const getGameStateRef = () => gameState;
+  const getAppStateRef = () => appState;
   const getGameState = computed(() => gameState.value);
+  const getGameStateRef = () => gameState;
   const getScore = computed(() => score.value);
-  const getFramesRef = () => frames;
   const getFrames = computed(() => frames.value);
+  const getFramesRef = () => frames;
   const getFieldMatrixRef = () => fieldMatrix;
 
   // ACTIONS:
@@ -72,13 +79,13 @@ export const useTetrisStore = defineStore('tetris', () => {
     getWidthRef, 
     getHeight,
     getHeightRef,
-    getAppStateRef,
     getAppState,
-    getGameStateRef,
+    getAppStateRef,
     getGameState,
+    getGameStateRef,
     getScore,
-    getFramesRef,
     getFrames,
+    getFramesRef,
     getFieldMatrixRef,
     setWidth,
     setHeight,

@@ -7,8 +7,8 @@ import { useTetrisStore } from '@/stores/tetris';
 const tetrisStore = useTetrisStore();
 const props = defineProps(['width', 'height']);
 
-onMounted(() => {console.log("Field MOUNTED, width: " + props.width + ", height: " + props.height)})
-onUpdated(() => {console.log("Field UPDATED, width: " + props.width + ", height: " + props.height)})
+// onMounted(() => {console.log("Field MOUNTED, width: " + props.width + ", height: " + props.height)})
+// onUpdated(() => {console.log("Field UPDATED, width: " + props.width + ", height: " + props.height)})
 </script>
 
 <template>
