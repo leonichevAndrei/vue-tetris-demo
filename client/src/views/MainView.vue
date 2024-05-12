@@ -10,7 +10,8 @@ import { generateFieldTypes } from "@/config/tetris.enums";
 const tetrisStore = useTetrisStore();
 
 let templateIdForUpdate = computed(() => 'mainViewId' + tetrisStore.getFramesRef().value);
-let intervalIdFrames: number;
+// let intervalIdFrames: number;
+let intervalIdFalling: number;
 const width = ref(tetrisStore.getWidth);
 const height = ref(tetrisStore.getHeight);
 
@@ -22,28 +23,28 @@ watch(tetrisStore.getHeightRef(), newHeight => {
   height.value = newHeight;
 });
 
-watch(tetrisStore.getAppStateRef(), appState => {
-  if (appStateEnum[appState] == 'init') {
-    tetrisStore.createAnyFieldMatrix(generateFieldTypes['filled']);
-    tetrisStore.resetFrames();
-  } else if (appStateEnum[appState] == 'runned') {
-    intervalIdFrames = setInterval(() => tetrisStore.updateFrames(), getMillisecondsByFPS(conf.fps));
-  } else if (appStateEnum[appState] == 'finished') {
-    clearInterval(intervalIdFrames);
-    tetrisStore.createAnyFieldMatrix(generateFieldTypes['empty']);
-    tetrisStore.updateFrames();
-  }
-});
+// watch(tetrisStore.getAppStateRef(), appState => {
+//   if (appStateEnum[appState] == 'runned') {
+//     intervalIdFrames = setInterval(() => tetrisStore.updateFrames(), getMillisecondsByFPS(conf.fps));
+//   } else if (appStateEnum[appState] == 'finished') {
+//     clearInterval(intervalIdFrames);
+//   }
+// });
 
 watch(tetrisStore.getGameStateRef(), gameState => {
-  if(gameStateEnum[gameState] == 'birth') {
-    tetrisStore.createAnyFieldMatrix(generateFieldTypes['empty']);
+  if (gameStateEnum[gameState] == 'nothing') {
+    if (intervalIdFalling !== null) clearInterval(intervalIdFalling);
   } else if (gameStateEnum[gameState] == 'movement') {
-
+    if (intervalIdFalling !== null) {
+      intervalIdFalling = setInterval(() => tetrisStore.renderNewFrame([0,1]), tetrisStore.getFallingSpeed);
+    }
+    
   } else if (gameStateEnum[gameState] == 'collision') {
     
   } else if (gameStateEnum[gameState] == 'cleaning') {
     
+  } else if (gameStateEnum[gameState] == 'finished') {
+
   }
 })
 

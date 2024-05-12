@@ -1,4 +1,4 @@
-export default [
+const element = [
   [
     [1,0,0],
     [1,1,0],
@@ -10,3 +10,5 @@ export default [
     [1,1,0]
   ]
 ]
+
+export default element;

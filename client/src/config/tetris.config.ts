@@ -7,5 +7,6 @@ export default {
     min: 20,
     max: 30
   },
-  fps: 10
+  fps: 1,
+  fallingSpeed: 1000
 }
