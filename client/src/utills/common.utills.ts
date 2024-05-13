@@ -1,3 +1,5 @@
+import { onMounted, onUnmounted } from "vue";
+
 export function getMillisecondsByFPS(fps: number) {
   return Math.ceil(1000 / fps);
 }
@@ -9,4 +11,9 @@ export function getRandomElementId(length: any, prevElementId: number) {
 
 export function getRandomFromX(count: number) {
   return Math.ceil(Math.random() * count);
+}
+
+export function useKeyupEvent(handler: { (this: Document, ev: KeyboardEvent): any; (this: Document, ev: KeyboardEvent): any; }) {
+  onMounted(() => document.addEventListener('keydown', handler));
+  onUnmounted(() => document.removeEventListener('keydown', handler));
 }

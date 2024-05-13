@@ -50,6 +50,7 @@ watch(inputValue, (newInputValue) => {
     <input 
       v-model='inputValue'
       @input='checkAndSetInputValue'
+      @keyup.enter='checkInputOnBlur'
       @focus='checkInputOnFocus'
       @blur='checkInputOnBlur'
     />

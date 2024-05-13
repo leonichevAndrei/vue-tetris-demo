@@ -22,11 +22,17 @@ const tetrisStore = useTetrisStore();
     <div v-if="appStateEnum[tetrisStore.getAppState]=='finished'" class='line'>
       <ControlPanelButton title='New Game' :appState='appStateEnum.init' />
     </div>
-    <div class='line'>
+    <!-- <div class='line'>
       App state: {{ appStateEnum[tetrisStore.getAppState] }}
-    </div>
+    </div> -->
+    <!-- <div class='line'>
+      Game state: {{ gameStateEnum[tetrisStore.getGameState] }}
+    </div> -->
+    <!-- <div class='line'>
+      Width: {{ tetrisStore.getWidth }} / Height {{ tetrisStore.getHeight }}
+    </div> -->
     <div class='line'>
-      Game state: {{ gameStateEnum[tetrisStore.getGameState] }} (frames: {{ tetrisStore.getFrames }})
+      Coords: {{ "x: " + tetrisStore.getElementCoords[0] + " / y: " + tetrisStore.getElementCoords[1] + " (frames: " + tetrisStore.getFrames }})
     </div>
   </div>
 </template>

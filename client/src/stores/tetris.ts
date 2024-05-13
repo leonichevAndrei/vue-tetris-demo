@@ -38,53 +38,30 @@ export const useTetrisStore = defineStore('tetris', () => {
   const getFrames = computed(() => frames.value);
   const getFramesRef = () => frames;
   const getFieldMatrixRef = () => fieldMatrix;
+  const getElementCoords = computed(() => elementCoords.value);
   const getFallingSpeed = computed(() => fallingSpeed.value);
 
   // ACTIONS:
   function setWidth(newWidth: number) {
-    generateAnyFieldMatrix(newWidth, height.value, generateFieldTypes['filled']);
     width.value = newWidth;
+    staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']);
+    console.log('setWidth from ' + width.value + " to " + newWidth);
     elementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), 0];
   }
   function setHeight(newHeight: number) {
-    generateAnyFieldMatrix(width.value, newHeight, generateFieldTypes['filled']);
     height.value = newHeight;
+    staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']);
+    console.log('setHeight from ' + height.value + " to " + newHeight);
   }
   function setAppState(newState: appStateEnum) {
-
-    // Delete it: just for test
-    // const testMatrix = [
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    //   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    // ]
-    // renderFieldMatrix(staticMatrix.value, testMatrix, 0, [0,-1], [0,0], 0);
-    // Delete it: just for test
-
     if (appStateEnum[newState] == 'init') {
-      createAnyFieldMatrix(generateFieldTypes['filled']);
+      fieldMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes.filled);
       resetFrames();
     } else if (appStateEnum[newState] == 'runned') {
       setGameState(gameStateEnum.birth);
     } else if (appStateEnum[newState] == 'finished') {
-      createAnyFieldMatrix(generateFieldTypes['empty']);
+      fieldMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes.empty);
+      staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes.empty);
       setGameState(gameStateEnum.nothing);
       updateFrames();
     } else {
@@ -94,14 +71,17 @@ export const useTetrisStore = defineStore('tetris', () => {
   }
   function setGameState(newState: gameStateEnum) {
     if (gameStateEnum[newState] == 'birth') {
-      createAnyFieldMatrix(generateFieldTypes['empty']);
       prevElementId.value = elementId.value;
       elementId.value = getRandomElementId(allElements.length, prevElementId.value);
       elementSpin.value = 0;
       prevElementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), -1];
       elementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), 0];
-      updateFrames();
-      setGameState(gameStateEnum.movement);
+      renderNewFrame([0,0]);
+      if (gameState.value != gameStateEnum.movement) setGameState(gameStateEnum.movement);
+    } else if (gameStateEnum[newState] == 'collision') {
+      setGameState(gameStateEnum.birth);
+    } else if (gameStateEnum[newState] == 'cleaning') {
+    
     } else {
       gameState.value = newState;
     }
@@ -114,38 +94,48 @@ export const useTetrisStore = defineStore('tetris', () => {
   }
   function updateFrames() {
     frames.value += 1;
-    getStatsInConsole();
+    // getStatsInConsole();
   }
   function resetFrames() {
     frames.value = -1;
   }
-  function createAnyFieldMatrix(generateFieldType: generateFieldTypes) {
-    fieldMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldType);
+  function updateSpin() {
+    const nextSpin = elementSpin.value + 1;
+    elementSpin.value = allElements[elementId.value][nextSpin] != undefined ? nextSpin : 0;
   }
   function renderNewFrame(relativeCoords: number[]) {
-    const result = renderFieldMatrix(staticMatrix.value, fieldMatrix.value, elementId.value, prevElementCoords.value, elementCoords.value, elementSpin.value);
+    const prevElementCoordsBackup = JSON.parse(JSON.stringify(prevElementCoords.value));
+    const elementCoordsBackup = JSON.parse(JSON.stringify(elementCoords.value));
     elementCoordsUpdate(relativeCoords);
-    fieldMatrix.value = [...result.matrix];
-    setGameState(result.gameState);
+    const result = renderFieldMatrix(staticMatrix.value, fieldMatrix.value, elementId.value, prevElementCoords.value, elementCoords.value, elementSpin.value);
+    fieldMatrix.value = JSON.parse(JSON.stringify(result.matrix));
+    if (result.gameState == gameStateEnum.collision) {
+      staticMatrix.value = JSON.parse(JSON.stringify(result.matrix));
+    }
+    if (result.gameState != gameState.value) setGameState(result.gameState);
+    if (result.returnPrevCoords) {
+      prevElementCoords.value = prevElementCoordsBackup;
+      elementCoords.value = elementCoordsBackup;
+    }
     updateFrames();
   }
   function elementCoordsUpdate(relativeCoords: number[]) {
-    prevElementCoords.value = elementCoords.value;
+    prevElementCoords.value = JSON.parse(JSON.stringify(elementCoords.value));
     elementCoords.value[0] += relativeCoords[0];
     elementCoords.value[1] += relativeCoords[1];
   }
   function getStatsInConsole() {
-    console.log("**************** FRAME # [" + frames.value + "] ***************");
+    console.log("*************** FRAME # [" + frames.value + "] **************");
     // console.log("width: " + width.value);
     // console.log("height: " + height.value);
-    console.log("appState: " + appStateEnum[appState.value]);
-    console.log("gameState: " + gameStateEnum[gameState.value]);
+    // console.log("appState: " + appStateEnum[appState.value]);
+    // console.log("gameState: " + gameStateEnum[gameState.value]);
     // console.log("score: " + score.value);
-    // console.log("fieldMatrix: " + fieldMatrix.value);
-    // console.log("staticMatrix: " + staticMatrix.value);
+    // console.log("fieldMatrixSize: " + fieldMatrix.value[0].length + "/" + fieldMatrix.value.length);
+    // console.log("staticMatrixSize: " + staticMatrix.value[0].length + "/" + staticMatrix.value.length);
     // console.log("prevElementId: " + prevElementId.value);
     console.log("elementId: " + elementId.value);
-    // console.log("elementSpin: " + elementSpin.value);
+    console.log("elementSpin: " + elementSpin.value);
     // console.log("prevElementCoords: " + prevElementCoords.value);
     console.log("elementCoords: " + elementCoords.value);
     // console.log("fallingSpeed: " + fallingSpeed.value);
@@ -164,6 +154,7 @@ export const useTetrisStore = defineStore('tetris', () => {
     getFrames,
     getFramesRef,
     getFieldMatrixRef,
+    getElementCoords,
     getFallingSpeed,
     setWidth,
     setHeight,
@@ -173,7 +164,7 @@ export const useTetrisStore = defineStore('tetris', () => {
     resetGameScore,
     updateFrames,
     resetFrames,
-    createAnyFieldMatrix,
+    updateSpin,
     renderNewFrame,
     getStatsInConsole
   }

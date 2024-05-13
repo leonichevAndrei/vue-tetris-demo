@@ -4,7 +4,6 @@ import allElements from '@/assets/elements/all-elms';
 export function getMiddlePosition(width: number, elementWidth: number) {
   return Math.round(width/2 - elementWidth/2 - 0.1);
 }
-
 export function generateAnyFieldMatrix(width: number, height: number, generateFieldType: generateFieldTypes) {
   const matrix: number[][] = [];
   let result: number = 0;
@@ -19,62 +18,61 @@ export function generateAnyFieldMatrix(width: number, height: number, generateFi
       matrix[y][x] = result;
     }
   }
-  // console.log(matrix);
   return matrix;
 }
 
-export function renderFieldMatrix (staticMatrix: number[][], fieldMatrix: number[][], elementId: number, prevElementCoords: number[], elementCoords: number[], elementSpin: number ): { matrix: number[][], gameState: gameStateEnum } { 
-  // const element = allElements[elementId][elementSpin];
+export function renderFieldMatrix (staticMatrix: number[][], fieldMatrix: number[][], elementId: number, prevElementCoords: number[], elementCoords: number[], elementSpin: number ): { matrix: number[][], gameState: gameStateEnum, returnPrevCoords: boolean } {
+  const element = allElements[elementId][elementSpin];
+  let isPossiblePosition = true;
+  let isCollision = false;
+  const newFieldMatrix = JSON.parse(JSON.stringify(staticMatrix));
+  let relX: number, relY: number;
 
-  // // console.log(element);
-  // // console.log(staticMatrix);
-  // // console.log("Coords: " + elementCoords);
-  // // console.log('--------------------')
-  // // console.log('--------------------')
+  // Cycle to check each point of element and corresponding field part:
+  for (let y = 0; y < element.length; y++) {
+    for (let x = 0; x < element[y].length; x++) {
+      // Get relative coordinates of corresponding field part:
+      relX = x + elementCoords[0];
+      relY = y + elementCoords[1];
+      // If current checking coords is inside our field:
+      if (staticMatrix[relY] != undefined && staticMatrix[relY][relX] != undefined) {
+        // Add corresponding element point information to the field if this point exists:
+        newFieldMatrix[relY][relX] = element[y][x] == 1 ? element[y][x] : staticMatrix[relY][relX];
+        // If point of field and point of element are at the same positions:
+        if (staticMatrix[relY][relX] == 1 && element[y][x] == 1) {
+          // If element went from top (falling down) set event as collision:
+          if (elementCoords[1] > prevElementCoords[1]) {
+            isCollision = true;
+          // In other cases (element went from left or right) it's not a possible position:
+          } else {
+            isPossiblePosition = false;
+          }
+          break;
+        }
+      // If current checking coords is outside of the field:
+      } else {
+        // If this coords are under the bottom part of field (by axis y) and element went from top (falling) set event as collision:
+        if (element[y][x] == 1 && staticMatrix[relY] == undefined && elementCoords[1] > prevElementCoords[1]) {
+          isCollision = true;
+          break;
+        // In other case if element went from left or right and current point of element exists mark it as impossible position (and return coords to previous step by axis x):
+        } else if (element[y][x] == 1 && elementCoords[1] == prevElementCoords[1]) {
+          isPossiblePosition = false;
+          break;
+        }
+      }
+    }
+    if (isCollision || !isPossiblePosition) break;
+  }
 
-  // let isPossiblePosition = true;
-  // let isCollision = false;
-  // const newFieldMatrix = [...staticMatrix];
-  // let relX: number, relY: number;
-
-  // for (let y = 0; y < element.length; y++) {
-  //   for (let x = 0; x < element[y].length; x++) {
-  //     relX = x + elementCoords[0];
-  //     relY = y + elementCoords[1];
-  //     // console.log("elm value in this point(" + x + "." + y + "): " + element[y][x])
-  //     // console.log("relX: " + relX + " / relY: " + relY);
-  //     if (staticMatrix[relY] != undefined && staticMatrix[relY][relX] != undefined) {
-  //       newFieldMatrix[relY][relX] = element[y][x];
-  //       // console.log('this point EXISTS and VALUE is:' + staticMatrix[relY][relX])
-  //       if (staticMatrix[relY][relX] == 1 && element[y][x] == 1) {
-  //         if (elementCoords[1] > prevElementCoords[1]) {
-  //           isCollision = true;
-  //         } else {
-  //           isPossiblePosition = false;
-  //         }
-  //         // console.log('if im here')
-  //         break;
-  //       }
-  //     } else {
-  //       // console.log('...point out of the field ...lets check...');
-  //       if (element[y][x] == 1) {
-  //         isPossiblePosition = false;
-  //         break;
-  //       }
-  //     }
-  //     console.log('--------------------')
-  //   }
-  //   if (isCollision || !isPossiblePosition) break;
-  // }
-
-  // if (!isPossiblePosition) {
-  //   return { matrix: fieldMatrix, gameState: gameStateEnum['movement'] }
-  // } else if (isCollision) {
-  //   return { matrix: fieldMatrix, gameState: gameStateEnum['collision'] }
-  // } else {
-  //   console.log(newFieldMatrix);
-  //   return { matrix: newFieldMatrix, gameState: gameStateEnum['movement'] }
-  // }
-
-  return { matrix: [...staticMatrix], gameState: gameStateEnum['movement'] }
+  if (!isPossiblePosition) {
+    console.log('NOT POSSIBLE POSITION');
+    return { matrix: fieldMatrix, gameState: gameStateEnum['movement'], returnPrevCoords: true}
+  } else if (isCollision) {
+    console.log('IS COLLISION');
+    return { matrix: fieldMatrix, gameState: gameStateEnum['collision'], returnPrevCoords: false }
+  } else {
+    console.log('CONTINUE MOVEMENT');
+    return { matrix: newFieldMatrix, gameState: gameStateEnum['movement'], returnPrevCoords: false }
+  }
 }
