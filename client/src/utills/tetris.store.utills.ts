@@ -21,9 +21,10 @@ export function generateAnyFieldMatrix(width: number, height: number, generateFi
   return matrix;
 }
 
-export function renderFieldMatrix (staticMatrix: number[][], fieldMatrix: number[][], elementId: number, prevElementCoords: number[], elementCoords: number[], elementSpin: number ): { matrix: number[][], gameState: gameStateEnum, returnPrevCoords: boolean } {
+export function renderFieldMatrix (staticMatrix: number[][], fieldMatrix: number[][], elementId: number, prevElementCoords: number[], elementCoords: number[], elementSpin: number ): { matrix: number[][], gameState: gameStateEnum, returnPrevCoords: boolean, returnPrevSpin: boolean } {
   const element = allElements[elementId][elementSpin];
   let isPossiblePosition = true;
+  let isPossibleRotation = true;
   let isCollision = false;
   const newFieldMatrix = JSON.parse(JSON.stringify(staticMatrix));
   let relX: number, relY: number;
@@ -40,8 +41,11 @@ export function renderFieldMatrix (staticMatrix: number[][], fieldMatrix: number
         newFieldMatrix[relY][relX] = element[y][x] == 1 ? element[y][x] : staticMatrix[relY][relX];
         // If point of field and point of element are at the same positions:
         if (staticMatrix[relY][relX] == 1 && element[y][x] == 1) {
+          // If element is after rotation:
+          if (elementCoords[0] == prevElementCoords[0] && elementCoords[1] == prevElementCoords[1]) {
+            isPossibleRotation = false;
           // If element went from top (falling down) set event as collision:
-          if (elementCoords[1] > prevElementCoords[1]) {
+          } else if (elementCoords[1] > prevElementCoords[1]) {
             isCollision = true;
           // In other cases (element went from left or right) it's not a possible position:
           } else {
@@ -51,28 +55,34 @@ export function renderFieldMatrix (staticMatrix: number[][], fieldMatrix: number
         }
       // If current checking coords is outside of the field:
       } else {
-        // If this coords are under the bottom part of field (by axis y) and element went from top (falling) set event as collision:
-        if (element[y][x] == 1 && staticMatrix[relY] == undefined && elementCoords[1] > prevElementCoords[1]) {
+        // If element is after rotation:
+        if (elementCoords[0] == prevElementCoords[0] && elementCoords[1] == prevElementCoords[1]) {
+          isPossibleRotation = false;
+        // If this coords are under the bottom part of field (by axis y) and element went from top (falling) set event as collision:  
+        } else if (element[y][x] == 1 && staticMatrix[relY] == undefined && elementCoords[1] > prevElementCoords[1]) {
           isCollision = true;
           break;
         // In other case if element went from left or right and current point of element exists mark it as impossible position (and return coords to previous step by axis x):
-        } else if (element[y][x] == 1 && elementCoords[1] == prevElementCoords[1]) {
+        } else if (element[y][x] == 1 && (elementCoords[1] == prevElementCoords[1] || elementCoords[1] < prevElementCoords[1])) {
           isPossiblePosition = false;
           break;
         }
       }
     }
-    if (isCollision || !isPossiblePosition) break;
+    if (isCollision || !isPossiblePosition || !isPossibleRotation) break;
   }
 
   if (!isPossiblePosition) {
     console.log('NOT POSSIBLE POSITION');
-    return { matrix: fieldMatrix, gameState: gameStateEnum['movement'], returnPrevCoords: true}
+    return { matrix: fieldMatrix, gameState: gameStateEnum['movement'], returnPrevCoords: true, returnPrevSpin: false }
+  } else if (!isPossibleRotation) {
+    console.log('NOT POSSIBLE ROTATION');
+    return { matrix: fieldMatrix, gameState: gameStateEnum['movement'], returnPrevCoords: true, returnPrevSpin: true }
   } else if (isCollision) {
     console.log('IS COLLISION');
-    return { matrix: fieldMatrix, gameState: gameStateEnum['collision'], returnPrevCoords: false }
+    return { matrix: fieldMatrix, gameState: gameStateEnum['collision'], returnPrevCoords: false, returnPrevSpin: false }
   } else {
     console.log('CONTINUE MOVEMENT');
-    return { matrix: newFieldMatrix, gameState: gameStateEnum['movement'], returnPrevCoords: false }
+    return { matrix: newFieldMatrix, gameState: gameStateEnum['movement'], returnPrevCoords: false, returnPrevSpin: false }
   }
 }

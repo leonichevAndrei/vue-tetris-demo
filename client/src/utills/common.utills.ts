@@ -13,7 +13,13 @@ export function getRandomFromX(count: number) {
   return Math.ceil(Math.random() * count);
 }
 
-export function useKeyupEvent(handler: { (this: Document, ev: KeyboardEvent): any; (this: Document, ev: KeyboardEvent): any; }) {
-  onMounted(() => document.addEventListener('keydown', handler));
-  onUnmounted(() => document.removeEventListener('keydown', handler));
+export function useKeyupEvent(handler: (event: KeyboardEvent) => void) {
+  onMounted(() => {
+    document.addEventListener('keydown', handler);
+    document.addEventListener('keyup', handler);
+  });
+  onUnmounted(() => {
+    document.removeEventListener('keydown', handler);
+    document.removeEventListener('keyup', handler);
+  });
 }

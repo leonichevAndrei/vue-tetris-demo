@@ -24,6 +24,8 @@ export const useTetrisStore = defineStore('tetris', () => {
   const prevElementCoords = ref([getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), -1]);
   const elementCoords = ref([getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), 0]);
   const fallingSpeed = ref(conf.fallingSpeed);
+  const movementSpeed = ref(conf.movementSpeed);
+  const sideSpeed = ref(conf.sideSpeed);
 
   // GETTERS:
   const getWidth = computed(() => width.value);
@@ -40,6 +42,8 @@ export const useTetrisStore = defineStore('tetris', () => {
   const getFieldMatrixRef = () => fieldMatrix;
   const getElementCoords = computed(() => elementCoords.value);
   const getFallingSpeed = computed(() => fallingSpeed.value);
+  const getMovementSpeed = computed(() => movementSpeed.value);
+  const getSideSpeed = computed(() => sideSpeed.value);
 
   // ACTIONS:
   function setWidth(newWidth: number) {
@@ -99,6 +103,10 @@ export const useTetrisStore = defineStore('tetris', () => {
   function resetFrames() {
     frames.value = -1;
   }
+  function backToPrevSpin() {
+    const nextSpin = elementSpin.value - 1;
+    elementSpin.value = allElements[elementId.value][nextSpin] != undefined ? nextSpin : allElements[elementId.value].length - 1;
+  }
   function updateSpin() {
     const nextSpin = elementSpin.value + 1;
     elementSpin.value = allElements[elementId.value][nextSpin] != undefined ? nextSpin : 0;
@@ -116,6 +124,9 @@ export const useTetrisStore = defineStore('tetris', () => {
     if (result.returnPrevCoords) {
       prevElementCoords.value = prevElementCoordsBackup;
       elementCoords.value = elementCoordsBackup;
+    }
+    if (result.returnPrevSpin) {
+      backToPrevSpin();
     }
     updateFrames();
   }
@@ -156,6 +167,8 @@ export const useTetrisStore = defineStore('tetris', () => {
     getFieldMatrixRef,
     getElementCoords,
     getFallingSpeed,
+    getMovementSpeed,
+    getSideSpeed,
     setWidth,
     setHeight,
     setAppState,
@@ -164,6 +177,7 @@ export const useTetrisStore = defineStore('tetris', () => {
     resetGameScore,
     updateFrames,
     resetFrames,
+    backToPrevSpin,
     updateSpin,
     renderNewFrame,
     getStatsInConsole
