@@ -1,5 +1,5 @@
 import { defineStore } from "pinia"
-import { computed, ref } from "vue"
+import { computed, ref, type Ref } from "vue"
 import { appStateEnum, gameStateEnum } from "@/config/tetris.enums";
 import { getRandomElementId } from "@/utills/common.utills";
 import { generateAnyFieldMatrix, renderFieldMatrix, getMiddlePosition } from "@/utills/tetris.store.utills";
@@ -26,6 +26,10 @@ export const useTetrisStore = defineStore('tetris', () => {
   const fallingSpeed = ref(conf.fallingSpeed);
   const movementSpeed = ref(conf.movementSpeed);
   const sideSpeed = ref(conf.sideSpeed);
+  const intervalIdFalling: Ref<number|null> = ref(null);
+  const keyPressed: Ref<{ [key: string]: boolean }> = ref({ ArrowUp: false, ArrowLeft: false, ArrowRight: false, ArrowDown: false, Space: false });
+  const keyInterval: Ref<{ [key: string]: number | null }> = ref({ ArrowUp: null, ArrowLeft: null, ArrowRight: null, ArrowDown: null, Space: null });
+
 
   // GETTERS:
   const getWidth = computed(() => width.value);
@@ -44,8 +48,20 @@ export const useTetrisStore = defineStore('tetris', () => {
   const getFallingSpeed = computed(() => fallingSpeed.value);
   const getMovementSpeed = computed(() => movementSpeed.value);
   const getSideSpeed = computed(() => sideSpeed.value);
+  const getKeyPressed = computed(() => keyPressed.value);
+  const getKeyInterval = computed(() => keyInterval.value);
 
   // ACTIONS:
+  function startFalling(speed: number) {
+    intervalIdFalling.value = setInterval(() => {
+      renderNewFrame([0,1]);
+      console.log('falling...');
+    }, speed);
+  }
+  function stopFalling() {
+    if (intervalIdFalling.value !== null) clearInterval(intervalIdFalling.value!);
+    intervalIdFalling.value = null;
+  }
   function setWidth(newWidth: number) {
     width.value = newWidth;
     staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']);
@@ -174,6 +190,10 @@ export const useTetrisStore = defineStore('tetris', () => {
     getFallingSpeed,
     getMovementSpeed,
     getSideSpeed,
+    getKeyPressed,
+    getKeyInterval,
+    startFalling,
+    stopFalling,
     setWidth,
     setHeight,
     setAppState,
