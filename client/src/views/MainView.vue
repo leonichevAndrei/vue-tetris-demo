@@ -19,19 +19,19 @@ watch(tetrisStore.getHeightRef(), newHeight => {
   height.value = newHeight;
 });
 
-watch(tetrisStore.getGameStateRef(), gameState => {
-  if (gameStateEnum[gameState] == 'nothing') {
-    tetrisStore.stopFalling();
-  } else if (gameStateEnum[gameState] == 'movement') {
-    tetrisStore.startFalling(tetrisStore.getFallingSpeed);
-  } else if (gameStateEnum[gameState] == 'collision') {
-    console.log('collision_in_mainView');
-  } else if (gameStateEnum[gameState] == 'cleaning') {
+// watch(tetrisStore.getGameStateRef(), gameState => {
+//   if (gameStateEnum[gameState] == 'nothing') {
+//     tetrisStore.stopFalling();
+//   } else if (gameStateEnum[gameState] == 'movement') {
+//     tetrisStore.startFalling(tetrisStore.getFallingSpeed);
+//   } else if (gameStateEnum[gameState] == 'collision') {
+//     console.log('collision_in_mainView');
+//   } else if (gameStateEnum[gameState] == 'cleaning') {
     
-  } else if (gameStateEnum[gameState] == 'finished') {
+//   } else if (gameStateEnum[gameState] == 'finished') {
 
-  }
-});
+//   }
+// });
 
 watch(() => tetrisStore.getKeyPressed.ArrowUp, key => stopFallingWhileKeyDown(key));
 watch(() => tetrisStore.getKeyPressed.ArrowDown, key => stopFallingWhileKeyDown(key));
