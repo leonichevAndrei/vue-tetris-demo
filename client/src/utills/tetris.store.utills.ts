@@ -21,11 +21,12 @@ export function generateAnyFieldMatrix(width: number, height: number, generateFi
   return matrix;
 }
 
-export function renderFieldMatrix (staticMatrix: number[][], fieldMatrix: number[][], elementId: number, prevElementCoords: number[], elementCoords: number[], elementSpin: number ): { matrix: number[][], gameState: gameStateEnum, returnPrevCoords: boolean, returnPrevSpin: boolean } {
+export function renderFieldMatrix (staticMatrix: number[][], fieldMatrix: number[][], elementId: number, prevElementCoords: number[], elementCoords: number[], elementSpin: number ): { matrix: number[][], gameState: gameStateEnum, returnPrevCoords: boolean, returnPrevSpin: boolean, isGameOver?: boolean } {
   const element = allElements[elementId][elementSpin];
   let isPossiblePosition = true;
   let isPossibleRotation = true;
   let isCollision = false;
+  let isGameOver = false;
   const newFieldMatrix = JSON.parse(JSON.stringify(staticMatrix));
   let relX: number, relY: number;
 
@@ -41,8 +42,11 @@ export function renderFieldMatrix (staticMatrix: number[][], fieldMatrix: number
         newFieldMatrix[relY][relX] = element[y][x] == 1 ? element[y][x] : staticMatrix[relY][relX];
         // If point of field and point of element are at the same positions:
         if (staticMatrix[relY][relX] == 1 && element[y][x] == 1) {
+          // Element is after birth:
+          if (elementCoords[1] === prevElementCoords[1] && elementCoords[1] === 0) {
+            isGameOver = true;
           // If element is after rotation:
-          if (elementCoords[0] == prevElementCoords[0] && elementCoords[1] == prevElementCoords[1]) {
+          } else if (elementCoords[0] === prevElementCoords[0] && elementCoords[1] === prevElementCoords[1]) {
             isPossibleRotation = false;
           // If element went from top (falling down) set event as collision:
           } else if (elementCoords[1] > prevElementCoords[1]) {
@@ -69,20 +73,23 @@ export function renderFieldMatrix (staticMatrix: number[][], fieldMatrix: number
         }
       }
     }
-    if (isCollision || !isPossiblePosition || !isPossibleRotation) break;
+    if (isCollision || !isPossiblePosition || !isPossibleRotation || isGameOver) break;
   }
 
-  if (!isPossiblePosition) {
+  if (isGameOver) {
+    console.log('GAME OVER');
+    return { matrix: newFieldMatrix, gameState: gameStateEnum.nothing, returnPrevCoords: false, returnPrevSpin: false, isGameOver }
+  } else if (!isPossiblePosition) {
     console.log('NOT POSSIBLE POSITION');
-    return { matrix: fieldMatrix, gameState: gameStateEnum['movement'], returnPrevCoords: true, returnPrevSpin: false }
+    return { matrix: fieldMatrix, gameState: gameStateEnum.movement, returnPrevCoords: true, returnPrevSpin: false }
   } else if (!isPossibleRotation) {
     console.log('NOT POSSIBLE ROTATION');
-    return { matrix: fieldMatrix, gameState: gameStateEnum['movement'], returnPrevCoords: true, returnPrevSpin: true }
+    return { matrix: fieldMatrix, gameState: gameStateEnum.movement, returnPrevCoords: true, returnPrevSpin: true }
   } else if (isCollision) {
     console.log('IS COLLISION');
-    return { matrix: fieldMatrix, gameState: gameStateEnum['collision'], returnPrevCoords: false, returnPrevSpin: false }
+    return { matrix: fieldMatrix, gameState: gameStateEnum.collision, returnPrevCoords: false, returnPrevSpin: false }
   } else {
     console.log('CONTINUE MOVEMENT');
-    return { matrix: newFieldMatrix, gameState: gameStateEnum['movement'], returnPrevCoords: false, returnPrevSpin: false }
+    return { matrix: newFieldMatrix, gameState: gameStateEnum.movement, returnPrevCoords: false, returnPrevSpin: false }
   }
 }

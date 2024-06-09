@@ -43,7 +43,6 @@ watch(() => keysPressed.value.ArrowDown, key => stopFallingWhileKeyDown(key));
 useKeyupEvent((event: KeyboardEvent) => {
   if (event.type === 'keydown') {
     keysPressed.value[event.code] = true;
-
     if (appStateEnum[tetrisStore.getAppState] == 'runned' && gameStateEnum[tetrisStore.getGameState] == 'movement') {
       if (!keyIntervals.value[event.code]) {
         handleKeyPress(event.code);
@@ -55,7 +54,6 @@ useKeyupEvent((event: KeyboardEvent) => {
     }
   } else if (event.type === 'keyup') {
     keysPressed.value[event.code] = false;
-
     if (keyIntervals.value[event.code]) {
       clearInterval(keyIntervals.value[event.code]!);
       keyIntervals.value[event.code] = null;

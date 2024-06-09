@@ -117,6 +117,12 @@ export const useTetrisStore = defineStore('tetris', () => {
     elementCoordsUpdate(relativeCoords);
     const result = renderFieldMatrix(staticMatrix.value, fieldMatrix.value, elementId.value, prevElementCoords.value, elementCoords.value, elementSpin.value);
     fieldMatrix.value = JSON.parse(JSON.stringify(result.matrix));
+    updateFrames();
+    if (result.isGameOver !== undefined && result.isGameOver) {
+       console.log("game over!!!!");
+       setAppState(appStateEnum.finished);
+       return;
+    }
     if (result.gameState == gameStateEnum.collision) {
       staticMatrix.value = JSON.parse(JSON.stringify(result.matrix));
     }
@@ -128,7 +134,6 @@ export const useTetrisStore = defineStore('tetris', () => {
     if (result.returnPrevSpin) {
       backToPrevSpin();
     }
-    updateFrames();
   }
   function elementCoordsUpdate(relativeCoords: number[]) {
     prevElementCoords.value = JSON.parse(JSON.stringify(elementCoords.value));
