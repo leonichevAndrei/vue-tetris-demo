@@ -9,6 +9,6 @@ export default {
   },
   fps: 1,
   fallingSpeed: 500,
-  movementSpeed: 5,
+  movementSpeed: 50,
   sideSpeed: 100
 }

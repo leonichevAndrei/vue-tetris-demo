@@ -29,6 +29,28 @@ export const useTetrisStore = defineStore('tetris', () => {
   const intervalIdFalling: Ref<number|null> = ref(null);
   const keyPressed: Ref<{ [key: string]: boolean }> = ref({ ArrowUp: false, ArrowLeft: false, ArrowRight: false, ArrowDown: false, Space: false });
   const keyInterval: Ref<{ [key: string]: number | null }> = ref({ ArrowUp: null, ArrowLeft: null, ArrowRight: null, ArrowDown: null, Space: null });
+  
+  // ADDITIONAL HELPERS (FOR DEVELOPMENT ONLY):
+  const startTimestamp = performance.now();
+  function getMSLog() {
+    let difference = (performance.now() - startTimestamp).toString();
+    if (difference.length == 5) {
+      difference += ".000000000000";
+    }
+    return `${difference}: `;
+  }
+  function getAppAndGameStateLog() {
+    return `<App:${appStateEnum[appState.value]}/Game:${gameStateEnum[gameState.value]}> ->`;
+  }
+  function addFrames() {
+    return `Frame<${frames.value}>`;
+  }
+  function myLog(logInfo: string) {
+    console.log(`
+      ${addFrames()} 
+      ${getAppAndGameStateLog()} 
+      ${logInfo}`);
+  }
 
   // GETTERS:
   const getWidth = computed(() => width.value);
@@ -52,80 +74,82 @@ export const useTetrisStore = defineStore('tetris', () => {
 
   // ACTIONS:
   function startFalling(speed: number) {
-    console.log("startFalling()");
+    myLog("startFalling()");
     if (appStateEnum[appState.value] == 'runned') {
       intervalIdFalling.value = setInterval(() => {
         if (appStateEnum[appState.value] == 'runned') {
+          myLog("startFalling() -> intervalIdFalling is active...");
           renderNewFrame([0,1]);
-          getStatsInConsole("startFalling() and intervalIdFalling is active...");
         }
       }, speed);
     }
   }
   function stopFalling() {
-    console.log("stopFalling()")
+    myLog("stopFalling()")
     if (intervalIdFalling.value !== null) clearInterval(intervalIdFalling.value!);
     intervalIdFalling.value = null;
   }
   function setWidth(newWidth: number) {
     width.value = newWidth;
     staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']);
-    console.log('setWidth from ' + width.value + " to " + newWidth);
+    myLog('setWidth from ' + width.value + " to " + newWidth);
     elementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), 0];
   }
   function setHeight(newHeight: number) {
     height.value = newHeight;
     staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']);
-    console.log('setHeight from ' + height.value + " to " + newHeight);
+    myLog('setHeight from ' + height.value + " to " + newHeight);
   }
   function setAppState(newState: appStateEnum) {
-    console.log("set App state to: " + appStateEnum[newState]);
+    myLog("set App state to: " + appStateEnum[newState]);
     if (appStateEnum[newState] == 'init') {
-      console.log("setAppState -> init");
+      myLog("setAppState -> init");
       appState.value = newState;
       fieldMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes.filled);
+      staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes.empty);
       resetFrames();
+      resetGameScore();
     } else if (appStateEnum[newState] == 'runned') {
-      console.log("setAppState -> runned");
+      myLog("setAppState -> runned");
       appState.value = newState;
       setGameState(gameStateEnum.birth);
     } else if (appStateEnum[newState] == 'finished') {
-      console.log("setAppState -> finished");
-      //fieldMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes.empty);
-      //staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes.empty);
+      myLog("setAppState -> finished");
       appState.value = newState;
       setGameState(gameStateEnum.nothing);
-      //updateFrames();
+      console.log("before");
+      setTimeout(() => {
+      }, 2000);
+      console.log("after");
     }
   }
   function setGameState(newState: gameStateEnum) {
-    console.log("set Game state to: " + gameStateEnum[newState]);
+    myLog("set Game state to: " + gameStateEnum[newState]);
     if (gameStateEnum[newState] == 'birth') {
-      console.log("setGameState -> birth");
+      myLog("setGameState -> birth");
       prevElementId.value = elementId.value;
       elementId.value = getRandomElementId(allElements.length, prevElementId.value);
       elementSpin.value = 0;
       prevElementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), -1];
       elementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), 0];
       renderNewFrame([0,0]);
-      if (gameState.value != gameStateEnum.movement) {
-        console.log('setGameState -> birth -> setGameState to movement');
+      if (gameState.value != gameStateEnum.nothing && gameState.value != gameStateEnum.movement) {
+        myLog('setGameState -> birth -> setGameState to movement');
         setGameState(gameStateEnum.movement);
       };
-      return;
     } else if (gameStateEnum[newState] == 'movement') {
-      console.log("setGameState -> movement");
+      myLog("setGameState -> movement");
       gameState.value = newState;
       startFalling(fallingSpeed.value);
     } else if (gameStateEnum[newState] == 'collision') {
-      console.log("setGameState -> collision");
+      myLog("setGameState -> collision");
       setGameState(gameStateEnum.birth); 
       return;
     } else if (gameStateEnum[newState] == 'cleaning') {
-      console.log("setGameState -> cleaning");
+      myLog("setGameState -> cleaning");
       gameState.value = newState;
     } else if (gameStateEnum[newState] == 'nothing') {
-      console.log("setGameState -> nothing");
+      myLog("setGameState -> nothing");
       gameState.value = newState;
       stopFalling();
     }
@@ -137,10 +161,11 @@ export const useTetrisStore = defineStore('tetris', () => {
     score.value = 0 
   }
   function updateFrames() {
+    myLog("updateFrames()");
     frames.value += 1;
-    // getStatsInConsole();
   }
   function resetFrames() {
+    myLog("resetFrames()");
     frames.value = -1;
   }
   function backToPrevSpin() {
@@ -152,7 +177,7 @@ export const useTetrisStore = defineStore('tetris', () => {
     elementSpin.value = allElements[elementId.value][nextSpin] != undefined ? nextSpin : 0;
   }
   function renderNewFrame(relativeCoords: number[]) {
-    console.log("renderNewFrame()");
+    myLog("renderNewFrame()");
     const prevElementCoordsBackup = JSON.parse(JSON.stringify(prevElementCoords.value));
     const elementCoordsBackup = JSON.parse(JSON.stringify(elementCoords.value));
     elementCoordsUpdate(relativeCoords);
@@ -164,15 +189,14 @@ export const useTetrisStore = defineStore('tetris', () => {
       elementCoords.value = elementCoordsBackup;
     }
     if (result.isGameOver !== undefined && result.isGameOver) {
-       console.log("renderNewFrame() -> isGameOver !!! app state set to finished");
-       stopFalling();
+       myLog("renderNewFrame() -> isGameOver !!! app state set to finished");
        setAppState(appStateEnum.finished);
     } else {
       if (result.gameState == gameStateEnum.collision) {
         staticMatrix.value = JSON.parse(JSON.stringify(result.matrix));
       }
       if (result.gameState != gameState.value) {
-        console.log("renderNewFrame -> setGameState to " + gameStateEnum[result.gameState]);
+        myLog("renderNewFrame -> setGameState to " + gameStateEnum[result.gameState]);
         setGameState(result.gameState);
       };
       if (result.returnPrevSpin) {
@@ -186,24 +210,24 @@ export const useTetrisStore = defineStore('tetris', () => {
     elementCoords.value[1] += relativeCoords[1];
   }
   function getStatsInConsole(place: string) {
-    console.log("*************** FRAME # [" + frames.value + "] IN <" + place + "> **************");
-    // console.log("width: " + width.value);
-    // console.log("height: " + height.value);
-    console.log("appState: " + appStateEnum[appState.value]);
-    console.log("gameState: " + gameStateEnum[gameState.value]);
-    // console.log("score: " + score.value);
-    // console.log("fieldMatrixSize: " + fieldMatrix.value[0].length + "/" + fieldMatrix.value.length);
-    // console.log("staticMatrixSize: " + staticMatrix.value[0].length + "/" + staticMatrix.value.length);
-    // console.log("prevElementId: " + prevElementId.value);
-    console.log("elementId: " + elementId.value);
-    console.log("elementSpin: " + elementSpin.value);
-    // console.log("prevElementCoords: " + prevElementCoords.value);
-    console.log("elementCoords: " + elementCoords.value);
-    // console.log("fallingSpeed: " + fallingSpeed.value);
-    console.log("intervalIdFalling: " + intervalIdFalling.value);
-    console.log(`keyPressed: { ArrowUp: ${keyPressed.value.ArrowUp}, ArrowLeft: ${keyPressed.value.ArrowLeft}, ArrowRight: ${keyPressed.value.ArrowRight}, ArrowDown: ${keyPressed.value.ArrowDown}, Space: ${keyPressed.value.Space} }`);
-    console.log(`keyInterval: { ArrowUp: ${keyInterval.value.ArrowUp}, ArrowLeft: ${keyInterval.value.ArrowLeft}, ArrowRight: ${keyInterval.value.ArrowRight}, ArrowDown: ${keyInterval.value.ArrowDown}, Space: ${keyInterval.value.Space} }`);
-    console.log("****************************************");
+    myLog("*************** FRAME # [" + frames.value + "] IN <" + place + "> **************");
+    // myLog("width: " + width.value);
+    // myLog("height: " + height.value);
+    myLog("appState: " + appStateEnum[appState.value]);
+    myLog("gameState: " + gameStateEnum[gameState.value]);
+    // myLog("score: " + score.value);
+    // myLog("fieldMatrixSize: " + fieldMatrix.value[0].length + "/" + fieldMatrix.value.length);
+    // myLog("staticMatrixSize: " + staticMatrix.value[0].length + "/" + staticMatrix.value.length);
+    // myLog("prevElementId: " + prevElementId.value);
+    myLog("elementId: " + elementId.value);
+    myLog("elementSpin: " + elementSpin.value);
+    // myLog("prevElementCoords: " + prevElementCoords.value);
+    myLog("elementCoords: " + elementCoords.value);
+    // myLog("fallingSpeed: " + fallingSpeed.value);
+    myLog("intervalIdFalling: " + intervalIdFalling.value);
+    myLog(`keyPressed: { ArrowUp: ${keyPressed.value.ArrowUp}, ArrowLeft: ${keyPressed.value.ArrowLeft}, ArrowRight: ${keyPressed.value.ArrowRight}, ArrowDown: ${keyPressed.value.ArrowDown}, Space: ${keyPressed.value.Space} }`);
+    myLog(`keyInterval: { ArrowUp: ${keyInterval.value.ArrowUp}, ArrowLeft: ${keyInterval.value.ArrowLeft}, ArrowRight: ${keyInterval.value.ArrowRight}, ArrowDown: ${keyInterval.value.ArrowDown}, Space: ${keyInterval.value.Space} }`);
+    myLog("****************************************");
   }
 
   return { 

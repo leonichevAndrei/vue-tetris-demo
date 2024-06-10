@@ -12,26 +12,14 @@ const width = ref(tetrisStore.getWidth);
 const height = ref(tetrisStore.getHeight);
 
 watch(tetrisStore.getWidthRef(), newWidth => {
+  console.log("width changed");
   width.value = newWidth;
 });
 
-watch(tetrisStore.getHeightRef(), newHeight => {
+watch(tetrisStore.getHeightRef(), newHeight => {  
+  console.log("height changed");
   height.value = newHeight;
 });
-
-// watch(tetrisStore.getGameStateRef(), gameState => {
-//   if (gameStateEnum[gameState] == 'nothing') {
-//     tetrisStore.stopFalling();
-//   } else if (gameStateEnum[gameState] == 'movement') {
-//     tetrisStore.startFalling(tetrisStore.getFallingSpeed);
-//   } else if (gameStateEnum[gameState] == 'collision') {
-//     console.log('collision_in_mainView');
-//   } else if (gameStateEnum[gameState] == 'cleaning') {
-    
-//   } else if (gameStateEnum[gameState] == 'finished') {
-
-//   }
-// });
 
 watch(() => tetrisStore.getKeyPressed.ArrowUp, key => stopFallingWhileKeyDown(key));
 watch(() => tetrisStore.getKeyPressed.ArrowDown, key => stopFallingWhileKeyDown(key));

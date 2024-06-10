@@ -1,6 +1,5 @@
 <script setup lang='ts'>
 import { computed } from 'vue';
-import { appStateEnum } from '@/config/tetris.enums';
 import { useTetrisStore } from '@/stores/tetris';
 const tetrisStore = useTetrisStore();
 const props = defineProps(['x', 'y']);
@@ -19,6 +18,3 @@ const elmStatus = computed(() => {
   <div :class='["element", elmStatus]'>
   </div>
 </template>
-
-<style scoped>
-</style>
