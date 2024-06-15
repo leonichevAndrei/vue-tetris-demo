@@ -178,27 +178,36 @@ export const useTetrisStore = defineStore('tetris', () => {
   }
   function renderNewFrame(relativeCoords: number[]) {
     myLog("renderNewFrame()");
+    // Saving previous coordinates values before updating them to new state:
     const prevElementCoordsBackup = JSON.parse(JSON.stringify(prevElementCoords.value));
     const elementCoordsBackup = JSON.parse(JSON.stringify(elementCoords.value));
     elementCoordsUpdate(relativeCoords);
+    // Rendering next game frame:
     const result = renderFieldMatrix(staticMatrix.value, fieldMatrix.value, elementId.value, prevElementCoords.value, elementCoords.value, elementSpin.value);
     fieldMatrix.value = JSON.parse(JSON.stringify(result.matrix));
+    // Updating frames value to update vue components:
     updateFrames();
+    // If we have order to return prev coordinates, let's do it:
     if (result.returnPrevCoords) {
       prevElementCoords.value = prevElementCoordsBackup;
       elementCoords.value = elementCoordsBackup;
     }
+    // If game was overed:
     if (result.isGameOver !== undefined && result.isGameOver) {
        myLog("renderNewFrame() -> isGameOver !!! app state set to finished");
        setAppState(appStateEnum.finished);
+    // If game still continues:
     } else {
+      // If was a "collision" event use current matrix state as default (swap object and environment into new environment):
       if (result.gameState == gameStateEnum.collision) {
         staticMatrix.value = JSON.parse(JSON.stringify(result.matrix));
       }
+      // Change game state if we have this order:
       if (result.gameState != gameState.value) {
         myLog("renderNewFrame -> setGameState to " + gameStateEnum[result.gameState]);
         setGameState(result.gameState);
       };
+      // Set previous coords as current coords if needed:
       if (result.returnPrevSpin) {
         backToPrevSpin();
       }
