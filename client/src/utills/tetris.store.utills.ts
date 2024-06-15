@@ -2,18 +2,24 @@ import { gameStateEnum, generateFieldTypes } from "@/config/tetris.enums";
 import allElements from '@/assets/elements/all-elms';
 
 export function getMiddlePosition(width: number, elementWidth: number) {
-  return Math.round(width/2 - elementWidth/2 - 0.1) + 1;
+  return Math.round(width / 2 - elementWidth / 2 - 0.1) + 1;
 }
+
 export function generateAnyFieldMatrix(width: number, height: number, generateFieldType: generateFieldTypes) {
   const matrix: number[][] = [];
   let result: number = 0;
   for (let y = 0; y < height; y++) {
     matrix[y] = [];
     for (let x = 0; x < width; x++) {
-      switch(generateFieldTypes[generateFieldType]) {
-        case 'filled': result = 1; break;
-        case 'empty': result = 0; break;
-        case 'random': result = Math.round(Math.random());
+      switch (generateFieldTypes[generateFieldType]) {
+        case 'filled':
+          result = 1;
+          break;
+        case 'empty':
+          result = 0;
+          break;
+        case 'random':
+          result = Math.round(Math.random());
       }
       matrix[y][x] = result;
     }
@@ -21,7 +27,32 @@ export function generateAnyFieldMatrix(width: number, height: number, generateFi
   return matrix;
 }
 
-export function renderFieldMatrix (staticMatrix: number[][], fieldMatrix: number[][], elementId: number, prevElementCoords: number[], elementCoords: number[], elementSpin: number ): { matrix: number[][], gameState: gameStateEnum, returnPrevCoords: boolean, returnPrevSpin: boolean, isGameOver?: boolean } {
+export function getPresetMatrix() {
+  return [
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0],
+    [0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,1,0],
+    [0,0,1,0,0,1,0,1,1,0,0,0,0,1,1,0,0,1,1,0],
+    [1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1],
+    [1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1],
+    [0,1,0,0,1,1,0,0,0,1,1,0,0,1,0,0,0,1,0,0],
+    [0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,1,0,0]
+  ]
+}
+
+export function renderFieldMatrix(staticMatrix: number[][], fieldMatrix: number[][], elementId: number, prevElementCoords: number[], elementCoords: number[], elementSpin: number): { matrix: number[][], gameState: gameStateEnum, returnPrevCoords: boolean, returnPrevSpin: boolean, isGameOver?: boolean } {
   const element = allElements[elementId][elementSpin];
   let isPossiblePosition = true;
   let isPossibleRotation = true;
@@ -30,43 +61,43 @@ export function renderFieldMatrix (staticMatrix: number[][], fieldMatrix: number
   const newFieldMatrix = JSON.parse(JSON.stringify(staticMatrix));
   let relX: number, relY: number;
 
-  // Cycle to check each point of element and corresponding field part:
+  // Cycle to check each point of the element and the corresponding field part:
   for (let y = 0; y < element.length; y++) {
     for (let x = 0; x < element[y].length; x++) {
-      // Get relative coordinates of corresponding field part:
+      // Get the relative coordinates of the corresponding field part:
       relX = x + elementCoords[0];
       relY = y + elementCoords[1];
-      // If current checking coords is inside our field:
+      // If the current checking coordinates are inside our field:
       if (staticMatrix[relY] != undefined && staticMatrix[relY][relX] != undefined) {
-        // Add corresponding element point information to the field if this point exists:
+        // Add the corresponding element point information to the field if this point exists:
         newFieldMatrix[relY][relX] = element[y][x] == 1 ? element[y][x] : staticMatrix[relY][relX];
-        // If point of field and point of element are at the same positions:
+        // If the field point and element point are at the same positions:
         if (staticMatrix[relY][relX] == 1 && element[y][x] == 1) {
-          // Element is after birth:
+          // Element is newly spawned:
           if (elementCoords[1] === prevElementCoords[1] && elementCoords[1] === 0) {
             isGameOver = true;
-          // If element is after rotation:
+          // If the element is after rotation:
           } else if (elementCoords[0] === prevElementCoords[0] && elementCoords[1] === prevElementCoords[1]) {
             isPossibleRotation = false;
-          // If element went from top (falling down) set event as collision:
+          // If the element came from the top (falling down), set the event as a collision:
           } else if (elementCoords[1] > prevElementCoords[1]) {
             isCollision = true;
-          // In other cases (element went from left or right) it's not a possible position:
+          // In other cases (element came from the left or right), it's not a possible position:
           } else {
             isPossiblePosition = false;
           }
           break;
         }
-      // If current checking coords is outside of the field:
+      // If the current checking coordinates are outside of the field:
       } else {
-        // If element is after rotation:
+        // If the element is after rotation:
         if (elementCoords[0] == prevElementCoords[0] && elementCoords[1] == prevElementCoords[1]) {
           isPossibleRotation = false;
-        // If this coords are under the bottom part of field (by axis y) and element went from top (falling) set event as collision:  
+        // If these coordinates are below the bottom part of the field (along the y-axis) and the element came from the top (falling), set the event as a collision:  
         } else if (element[y][x] == 1 && staticMatrix[relY] == undefined && elementCoords[1] > prevElementCoords[1]) {
           isCollision = true;
           break;
-        // In other case if element went from left or right and current point of element exists mark it as impossible position (and return coords to previous step by axis x):
+        // Otherwise, if the element came from the left or right and the current point of the element exists, mark it as an impossible position (and return the coordinates to the previous step along the x-axis):
         } else if (element[y][x] == 1 && (elementCoords[1] == prevElementCoords[1] || elementCoords[1] < prevElementCoords[1])) {
           isPossiblePosition = false;
           break;

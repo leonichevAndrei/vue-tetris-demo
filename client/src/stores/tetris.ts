@@ -2,7 +2,7 @@ import { defineStore } from "pinia"
 import { computed, ref, type Ref } from "vue"
 import { appStateEnum, gameStateEnum } from "@/config/tetris.enums";
 import { getRandomElementId } from "@/utills/common.utills";
-import { generateAnyFieldMatrix, renderFieldMatrix, getMiddlePosition } from "@/utills/tetris.store.utills";
+import { generateAnyFieldMatrix, renderFieldMatrix, getMiddlePosition, getPresetMatrix } from "@/utills/tetris.store.utills";
 import { generateFieldTypes } from "@/config/tetris.enums";
 import allElements from '@/assets/elements/all-elms';
 import conf from '@/config/tetris.config.ts';
@@ -17,9 +17,10 @@ export const useTetrisStore = defineStore('tetris', () => {
   const score = ref(0);
   const frames = ref(-1);
   const fieldMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['filled']));
-  const staticMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']));
+  const staticMatrix = ref(getPresetMatrix());
+  // const staticMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']));
   const prevElementId = ref(-1);
-  const elementId = ref(getRandomElementId(allElements.length, prevElementId.value));
+  const elementId = ref(0);
   const elementSpin = ref(0);
   const prevElementCoords = ref([getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), -1]);
   const elementCoords = ref([getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), 0]);
@@ -46,10 +47,10 @@ export const useTetrisStore = defineStore('tetris', () => {
     return `Frame<${frames.value}>`;
   }
   function myLog(logInfo: string) {
-    console.log(`
-      ${addFrames()} 
-      ${getAppAndGameStateLog()} 
-      ${logInfo}`);
+    // console.log(`
+    //   ${addFrames()} 
+    //   ${getAppAndGameStateLog()} 
+    //   ${logInfo}`);
   }
 
   // GETTERS:
@@ -128,7 +129,8 @@ export const useTetrisStore = defineStore('tetris', () => {
     if (gameStateEnum[newState] == 'birth') {
       myLog("setGameState -> birth");
       prevElementId.value = elementId.value;
-      elementId.value = getRandomElementId(allElements.length, prevElementId.value);
+      elementId.value = 1;
+      // elementId.value = getRandomElementId(allElements.length, prevElementId.value);
       elementSpin.value = 0;
       prevElementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), -1];
       elementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), 0];
@@ -143,7 +145,9 @@ export const useTetrisStore = defineStore('tetris', () => {
       startFalling(fallingSpeed.value);
     } else if (gameStateEnum[newState] == 'collision') {
       myLog("setGameState -> collision");
-      setGameState(gameStateEnum.birth); 
+      console.log("inside collision");
+      stopFalling();
+      //setGameState(gameStateEnum.birth); 
       return;
     } else if (gameStateEnum[newState] == 'cleaning') {
       myLog("setGameState -> cleaning");
@@ -178,41 +182,42 @@ export const useTetrisStore = defineStore('tetris', () => {
   }
   function renderNewFrame(relativeCoords: number[]) {
     myLog("renderNewFrame()");
-    // Saving previous coordinates values before updating them to new state:
+    // Saving previous coordinates values before updating them to the new state:
     const prevElementCoordsBackup = JSON.parse(JSON.stringify(prevElementCoords.value));
     const elementCoordsBackup = JSON.parse(JSON.stringify(elementCoords.value));
     elementCoordsUpdate(relativeCoords);
-    // Rendering next game frame:
+    // Rendering the next game frame:
     const result = renderFieldMatrix(staticMatrix.value, fieldMatrix.value, elementId.value, prevElementCoords.value, elementCoords.value, elementSpin.value);
     fieldMatrix.value = JSON.parse(JSON.stringify(result.matrix));
-    // Updating frames value to update vue components:
+    // Updating frames value to refresh Vue components:
     updateFrames();
-    // If we have order to return prev coordinates, let's do it:
+    // If we have an order to return to previous coordinates, let's do it:
     if (result.returnPrevCoords) {
       prevElementCoords.value = prevElementCoordsBackup;
       elementCoords.value = elementCoordsBackup;
     }
-    // If game was overed:
+    // If the game is over:
     if (result.isGameOver !== undefined && result.isGameOver) {
-       myLog("renderNewFrame() -> isGameOver !!! app state set to finished");
-       setAppState(appStateEnum.finished);
-    // If game still continues:
+      myLog("renderNewFrame() -> isGameOver !!! app state set to finished");
+      setAppState(appStateEnum.finished);
+    // If the game still continues:
     } else {
-      // If was a "collision" event use current matrix state as default (swap object and environment into new environment):
+      // If there was a "collision" event, use the current matrix state as the default (swap object and environment into the new environment):
       if (result.gameState == gameStateEnum.collision) {
         staticMatrix.value = JSON.parse(JSON.stringify(result.matrix));
       }
-      // Change game state if we have this order:
+      // Change the game state if we have this order:
       if (result.gameState != gameState.value) {
         myLog("renderNewFrame -> setGameState to " + gameStateEnum[result.gameState]);
         setGameState(result.gameState);
-      };
-      // Set previous coords as current coords if needed:
+      }
+      // Set previous coordinates as current coordinates if needed:
       if (result.returnPrevSpin) {
         backToPrevSpin();
       }
     }
   }
+  
   function elementCoordsUpdate(relativeCoords: number[]) {
     prevElementCoords.value = JSON.parse(JSON.stringify(elementCoords.value));
     elementCoords.value[0] += relativeCoords[0];
