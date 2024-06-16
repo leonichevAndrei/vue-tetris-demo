@@ -1,5 +1,6 @@
 import { gameStateEnum, generateFieldTypes } from "@/config/tetris.enums";
 import allElements from '@/assets/elements/all-elms';
+import type { Ref } from "vue";
 
 export function getMiddlePosition(width: number, elementWidth: number) {
   return Math.round(width / 2 - elementWidth / 2 - 0.1) + 1;
@@ -123,4 +124,37 @@ export function renderFieldMatrix(staticMatrix: number[][], fieldMatrix: number[
     console.log('* CONTINUE MOVEMENT');
     return { matrix: newFieldMatrix, gameState: gameStateEnum.movement, returnPrevCoords: false, returnPrevSpin: false }
   }
+}
+
+export function getCleaningStateByStaticMatrix(staticMatrix: number[][]) {
+  const resultObj = { byXAxis:new Array(), byYAxis:new Array() }
+  for(let y = 0; y < staticMatrix.length; y++) {
+    let isFilledLine = true;
+    for(let x = 0; x < staticMatrix[y].length; x++) {
+      if (staticMatrix[y][x] == 0) {
+        isFilledLine = false;
+        break;
+      }
+    }
+    if (isFilledLine) {
+      resultObj.byYAxis.push(y);
+      if (resultObj.byXAxis.length == 0) {
+        resultObj.byXAxis.push(...(Array.from({length: staticMatrix[0].length}, (_,k) => k)));
+      }
+    }
+  }
+  return resultObj;
+}
+
+export function renderCleanedFieldMatrix(staticMatrix: number[][], cleaningState: { byXAxis: number[], byYAxis: number[] }) {
+  const nextStaticMatrix = JSON.parse(JSON.stringify(staticMatrix));
+  const nextCleaningState = JSON.parse(JSON.stringify(cleaningState));
+  for (let y = 0; y < cleaningState.byYAxis.length; y++) {
+    if (cleaningState.byXAxis[0] !== undefined) {
+      nextStaticMatrix[cleaningState.byYAxis[y]][cleaningState.byXAxis[0]] = 0;
+    }
+  }
+  nextCleaningState.byXAxis = cleaningState.byXAxis.slice(1);
+  console.log(nextCleaningState);
+  return { nextStaticMatrix, nextCleaningState };
 }

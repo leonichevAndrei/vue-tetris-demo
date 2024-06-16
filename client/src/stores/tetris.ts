@@ -1,8 +1,7 @@
 import { defineStore } from "pinia"
 import { computed, ref, type Ref } from "vue"
 import { appStateEnum, gameStateEnum } from "@/config/tetris.enums";
-import { getRandomElementId } from "@/utills/common.utills";
-import { generateAnyFieldMatrix, renderFieldMatrix, getMiddlePosition, getPresetMatrix } from "@/utills/tetris.store.utills";
+import { generateAnyFieldMatrix, renderFieldMatrix, getMiddlePosition, getPresetMatrix, getCleaningStateByStaticMatrix, renderCleanedFieldMatrix } from "@/utills/tetris.store.utills";
 import { generateFieldTypes } from "@/config/tetris.enums";
 import allElements from '@/assets/elements/all-elms';
 import conf from '@/config/tetris.config.ts';
@@ -28,8 +27,10 @@ export const useTetrisStore = defineStore('tetris', () => {
   const movementSpeed = ref(conf.movementSpeed);
   const sideSpeed = ref(conf.sideSpeed);
   const intervalIdFalling: Ref<number|null> = ref(null);
+  const intervalIdCleaning: Ref<number|null> = ref(null);
   const keyPressed: Ref<{ [key: string]: boolean }> = ref({ ArrowUp: false, ArrowLeft: false, ArrowRight: false, ArrowDown: false, Space: false });
   const keyInterval: Ref<{ [key: string]: number | null }> = ref({ ArrowUp: null, ArrowLeft: null, ArrowRight: null, ArrowDown: null, Space: null });
+  const cleaningState: Ref<{ byXAxis: number[]; byYAxis: number[] }> = ref({ byXAxis:[], byYAxis:[] });
   
   // ADDITIONAL HELPERS (FOR DEVELOPMENT ONLY):
   const startTimestamp = performance.now();
@@ -41,16 +42,17 @@ export const useTetrisStore = defineStore('tetris', () => {
     return `${difference}: `;
   }
   function getAppAndGameStateLog() {
-    return `<App:${appStateEnum[appState.value]}/Game:${gameStateEnum[gameState.value]}> ->`;
+    return `<App: [${appStateEnum[appState.value]}] & Game: [${gameStateEnum[gameState.value]}]> ->`;
   }
   function addFrames() {
     return `Frame<${frames.value}>`;
   }
   function myLog(logInfo: string) {
-    // console.log(`
-    //   ${addFrames()} 
-    //   ${getAppAndGameStateLog()} 
-    //   ${logInfo}`);
+    console.log(`
+      ${addFrames()} 
+      ${getAppAndGameStateLog()} 
+      ${logInfo}
+    `);
   }
 
   // GETTERS:
@@ -90,19 +92,37 @@ export const useTetrisStore = defineStore('tetris', () => {
     if (intervalIdFalling.value !== null) clearInterval(intervalIdFalling.value!);
     intervalIdFalling.value = null;
   }
+  function startCleaning(speed:number) {
+    myLog("startCleaning()");
+    if (appStateEnum[appState.value] == 'runned') {
+      intervalIdCleaning.value = setInterval(() => {
+        if (appStateEnum[appState.value] == 'runned' && intervalIdFalling.value === null) {
+          myLog("startCleaning() -> intervalIdCleaning is active...");
+          renderNewCleaningFrame();
+        }
+      }, speed);
+    }
+  }
+  function stopCleaning() {
+    myLog("stopCleaning()");
+    if (intervalIdCleaning.value !== null) clearInterval(intervalIdCleaning.value!);
+    intervalIdCleaning.value = null;
+  }
   function setWidth(newWidth: number) {
+    myLog("setWidth()");
     width.value = newWidth;
     staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']);
     myLog('setWidth from ' + width.value + " to " + newWidth);
     elementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), 0];
   }
   function setHeight(newHeight: number) {
+    myLog("setHeight()");
     height.value = newHeight;
     staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']);
     myLog('setHeight from ' + height.value + " to " + newHeight);
   }
   function setAppState(newState: appStateEnum) {
-    myLog("set App state to: " + appStateEnum[newState]);
+    myLog("PREPARE TO set App state to: " + appStateEnum[newState] + "...");
     if (appStateEnum[newState] == 'init') {
       myLog("setAppState -> init");
       appState.value = newState;
@@ -125,7 +145,7 @@ export const useTetrisStore = defineStore('tetris', () => {
     }
   }
   function setGameState(newState: gameStateEnum) {
-    myLog("set Game state to: " + gameStateEnum[newState]);
+    myLog("PREPARE TO set Game state to: " + gameStateEnum[newState] + "...");
     if (gameStateEnum[newState] == 'birth') {
       myLog("setGameState -> birth");
       prevElementId.value = elementId.value;
@@ -145,10 +165,14 @@ export const useTetrisStore = defineStore('tetris', () => {
       startFalling(fallingSpeed.value);
     } else if (gameStateEnum[newState] == 'collision') {
       myLog("setGameState -> collision");
-      console.log("inside collision");
-      stopFalling();
-      //setGameState(gameStateEnum.birth); 
-      return;
+      updateCleaningState();
+      if (cleaningState.value.byYAxis.length > 0) {
+        stopFalling();
+        startCleaning(conf.cleaningSpeed);
+        setGameState(gameStateEnum.cleaning);
+      } else {
+        setGameState(gameStateEnum.birth);
+      }
     } else if (gameStateEnum[newState] == 'cleaning') {
       myLog("setGameState -> cleaning");
       gameState.value = newState;
@@ -159,9 +183,11 @@ export const useTetrisStore = defineStore('tetris', () => {
     }
   }
   function updateGameScore(addPoints: number) {
+    myLog("updateGameScore()");
     score.value += addPoints;
   }
-  function resetGameScore() { 
+  function resetGameScore() {
+    myLog("resetGameScore()");
     score.value = 0 
   }
   function updateFrames() {
@@ -173,12 +199,18 @@ export const useTetrisStore = defineStore('tetris', () => {
     frames.value = -1;
   }
   function backToPrevSpin() {
+    myLog("backToPrevSpin()");
     const nextSpin = elementSpin.value - 1;
     elementSpin.value = allElements[elementId.value][nextSpin] != undefined ? nextSpin : allElements[elementId.value].length - 1;
   }
   function updateSpin() {
+    myLog("updateSpin()");
     const nextSpin = elementSpin.value + 1;
     elementSpin.value = allElements[elementId.value][nextSpin] != undefined ? nextSpin : 0;
+  }
+  function setCleaningState(newCleaningValue: { byXAxis: number[]; byYAxis: number[] }) {
+    myLog("setCleaningState()");
+    cleaningState.value = newCleaningValue;
   }
   function renderNewFrame(relativeCoords: number[]) {
     myLog("renderNewFrame()");
@@ -217,11 +249,29 @@ export const useTetrisStore = defineStore('tetris', () => {
       }
     }
   }
-  
+  function renderNewCleaningFrame() {
+    myLog("renderNewCleaningFrame()");
+    const result = renderCleanedFieldMatrix(staticMatrix.value, cleaningState.value);
+    staticMatrix.value = result.nextStaticMatrix;
+    fieldMatrix.value = result.nextStaticMatrix;
+    if (result.nextCleaningState.byXAxis.length == 0) {
+      console.log("______YALLA")
+      setCleaningState({ byXAxis:[], byYAxis:[] });
+      stopCleaning();
+    } else {
+      setCleaningState(result.nextCleaningState);
+    }
+    updateFrames();
+  }
   function elementCoordsUpdate(relativeCoords: number[]) {
+    myLog("elementCoordsUpdate()");
     prevElementCoords.value = JSON.parse(JSON.stringify(elementCoords.value));
     elementCoords.value[0] += relativeCoords[0];
     elementCoords.value[1] += relativeCoords[1];
+  }
+  function updateCleaningState() {
+    myLog("updateCleaningState()");
+    cleaningState.value = getCleaningStateByStaticMatrix(staticMatrix.value);
   }
   function getStatsInConsole(place: string) {
     myLog("*************** FRAME # [" + frames.value + "] IN <" + place + "> **************");
