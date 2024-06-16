@@ -1,7 +1,7 @@
 import { defineStore } from "pinia"
 import { computed, ref, type Ref } from "vue"
 import { appStateEnum, gameStateEnum } from "@/config/tetris.enums";
-import { generateAnyFieldMatrix, renderFieldMatrix, getMiddlePosition, getPresetMatrix, getCleaningStateByStaticMatrix, renderCleanedFieldMatrix } from "@/utills/tetris.store.utills";
+import { generateAnyFieldMatrix, renderFieldMatrix, getMiddlePosition, getPresetMatrix, getCleaningStateByStaticMatrix, renderCleanedFieldMatrix, combineStaticMatrixPartsInOne } from "@/utills/tetris.store.utills";
 import { generateFieldTypes } from "@/config/tetris.enums";
 import allElements from '@/assets/elements/all-elms';
 import conf from '@/config/tetris.config.ts';
@@ -208,10 +208,6 @@ export const useTetrisStore = defineStore('tetris', () => {
     const nextSpin = elementSpin.value + 1;
     elementSpin.value = allElements[elementId.value][nextSpin] != undefined ? nextSpin : 0;
   }
-  function setCleaningState(newCleaningValue: { byXAxis: number[]; byYAxis: number[] }) {
-    myLog("setCleaningState()");
-    cleaningState.value = newCleaningValue;
-  }
   function renderNewFrame(relativeCoords: number[]) {
     myLog("renderNewFrame()");
     // Saving previous coordinates values before updating them to the new state:
@@ -254,12 +250,18 @@ export const useTetrisStore = defineStore('tetris', () => {
     const result = renderCleanedFieldMatrix(staticMatrix.value, cleaningState.value);
     staticMatrix.value = result.nextStaticMatrix;
     fieldMatrix.value = result.nextStaticMatrix;
+    cleaningState.value = result.nextCleaningState;
     if (result.nextCleaningState.byXAxis.length == 0) {
-      console.log("______YALLA")
-      setCleaningState({ byXAxis:[], byYAxis:[] });
       stopCleaning();
+      const newStaticMatrix = combineStaticMatrixPartsInOne({ staticMatrix: result.nextStaticMatrix, lines: result.nextCleaningState.byYAxis });
+      staticMatrix.value = newStaticMatrix;
+      fieldMatrix.value = newStaticMatrix;
+      setTimeout(() => {
+        setGameState(gameStateEnum.birth);
+      }, conf.cleaningSpeed);
     } else {
-      setCleaningState(result.nextCleaningState);
+      staticMatrix.value = result.nextStaticMatrix;
+      fieldMatrix.value = result.nextStaticMatrix;
     }
     updateFrames();
   }

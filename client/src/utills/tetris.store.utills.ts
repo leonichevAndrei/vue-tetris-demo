@@ -5,7 +5,6 @@ import type { Ref } from "vue";
 export function getMiddlePosition(width: number, elementWidth: number) {
   return Math.round(width / 2 - elementWidth / 2 - 0.1) + 1;
 }
-
 export function generateAnyFieldMatrix(width: number, height: number, generateFieldType: generateFieldTypes) {
   const matrix: number[][] = [];
   let result: number = 0;
@@ -27,7 +26,6 @@ export function generateAnyFieldMatrix(width: number, height: number, generateFi
   }
   return matrix;
 }
-
 export function getPresetMatrix() {
   return [
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -52,7 +50,6 @@ export function getPresetMatrix() {
     [0,1,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,1,0,0]
   ]
 }
-
 export function renderFieldMatrix(staticMatrix: number[][], fieldMatrix: number[][], elementId: number, prevElementCoords: number[], elementCoords: number[], elementSpin: number): { matrix: number[][], gameState: gameStateEnum, returnPrevCoords: boolean, returnPrevSpin: boolean, isGameOver?: boolean } {
   const element = allElements[elementId][elementSpin];
   let isPossiblePosition = true;
@@ -125,7 +122,6 @@ export function renderFieldMatrix(staticMatrix: number[][], fieldMatrix: number[
     return { matrix: newFieldMatrix, gameState: gameStateEnum.movement, returnPrevCoords: false, returnPrevSpin: false }
   }
 }
-
 export function getCleaningStateByStaticMatrix(staticMatrix: number[][]) {
   const resultObj = { byXAxis:new Array(), byYAxis:new Array() }
   for(let y = 0; y < staticMatrix.length; y++) {
@@ -145,7 +141,6 @@ export function getCleaningStateByStaticMatrix(staticMatrix: number[][]) {
   }
   return resultObj;
 }
-
 export function renderCleanedFieldMatrix(staticMatrix: number[][], cleaningState: { byXAxis: number[], byYAxis: number[] }) {
   const nextStaticMatrix = JSON.parse(JSON.stringify(staticMatrix));
   const nextCleaningState = JSON.parse(JSON.stringify(cleaningState));
@@ -155,6 +150,14 @@ export function renderCleanedFieldMatrix(staticMatrix: number[][], cleaningState
     }
   }
   nextCleaningState.byXAxis = cleaningState.byXAxis.slice(1);
-  console.log(nextCleaningState);
   return { nextStaticMatrix, nextCleaningState };
+}
+export function combineStaticMatrixPartsInOne(data: { staticMatrix: number[][]; lines: number[] }) {
+  const lines = data.lines;
+  const matrix = data.staticMatrix;
+  const length = data.staticMatrix[0].length;
+  const addedPart = new Array(lines.length).fill(new Array(length).fill(0));
+  (matrix.splice(lines[0], lines.length));
+  matrix.unshift(...addedPart);
+  return matrix;
 }
