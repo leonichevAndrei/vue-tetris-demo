@@ -3,6 +3,7 @@ import { computed, ref, type Ref } from "vue"
 import { appStateEnum, gameStateEnum } from "@/config/tetris.enums";
 import { generateAnyFieldMatrix, renderFieldMatrix, getMiddlePosition, getPresetMatrix, getCleaningStateByStaticMatrix, renderCleanedFieldMatrix, combineStaticMatrixPartsInOne } from "@/utills/tetris.store.utills";
 import { generateFieldTypes } from "@/config/tetris.enums";
+import { getRandomElementId } from "@/utills/common.utills";
 import allElements from '@/assets/elements/all-elms';
 import conf from '@/config/tetris.config.ts';
 
@@ -16,8 +17,8 @@ export const useTetrisStore = defineStore('tetris', () => {
   const score = ref(0);
   const frames = ref(-1);
   const fieldMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['filled']));
-  const staticMatrix = ref(getPresetMatrix());
-  // const staticMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']));
+  // const staticMatrix = ref(getPresetMatrix());
+  const staticMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']));
   const prevElementId = ref(-1);
   const elementId = ref(0);
   const elementSpin = ref(0);
@@ -32,7 +33,7 @@ export const useTetrisStore = defineStore('tetris', () => {
   const keyInterval: Ref<{ [key: string]: number | null }> = ref({ ArrowUp: null, ArrowLeft: null, ArrowRight: null, ArrowDown: null, Space: null });
   const cleaningState: Ref<{ byXAxis: number[]; byYAxis: number[] }> = ref({ byXAxis:[], byYAxis:[] });
   
-  // ADDITIONAL HELPERS (FOR DEVELOPMENT ONLY):
+  // LOGGING:
   const startTimestamp = performance.now();
   function getMSLog() {
     let difference = (performance.now() - startTimestamp).toString();
@@ -48,11 +49,11 @@ export const useTetrisStore = defineStore('tetris', () => {
     return `Frame<${frames.value}>`;
   }
   function myLog(logInfo: string) {
-    console.log(`
-      ${addFrames()} 
-      ${getAppAndGameStateLog()} 
-      ${logInfo}
-    `);
+    // console.log(`
+    //   ${addFrames()} 
+    //   ${getAppAndGameStateLog()} 
+    //   ${logInfo}
+    // `);
   }
 
   // GETTERS:
@@ -149,8 +150,8 @@ export const useTetrisStore = defineStore('tetris', () => {
     if (gameStateEnum[newState] == 'birth') {
       myLog("setGameState -> birth");
       prevElementId.value = elementId.value;
-      elementId.value = 1;
-      // elementId.value = getRandomElementId(allElements.length, prevElementId.value);
+      // elementId.value = 1;
+      elementId.value = getRandomElementId(allElements.length, prevElementId.value);
       elementSpin.value = 0;
       prevElementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), -1];
       elementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), 0];

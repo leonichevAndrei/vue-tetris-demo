@@ -5,6 +5,30 @@
 .control-panel .line {
     justify-content: center;
 }
+.control-panel .line .info {
+    width: 436px;
+    padding: 10px 10px 0;
+}
+.control-panel .line .info .left {
+    width: 33%;
+    justify-content: flex-start;
+
+}
+.control-panel .line .info .center {
+    width: 34%;
+    justify-content: center;
+}
+.control-panel .line .info .right {
+    width: 33%;
+    justify-content: flex-end;
+}
+.control-panel .line .info .right .elm2 {
+    width: 24px;
+    height: 24px;
+}
+.control-panel .line .info div span {
+    color: rgb(51, 208, 208);
+}
 .input-box {
     flex-direction: column;
     margin: 5px;

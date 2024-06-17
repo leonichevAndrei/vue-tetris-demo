@@ -1,6 +1,5 @@
 import { gameStateEnum, generateFieldTypes } from "@/config/tetris.enums";
 import allElements from '@/assets/elements/all-elms';
-import type { Ref } from "vue";
 
 export function getMiddlePosition(width: number, elementWidth: number) {
   return Math.round(width / 2 - elementWidth / 2 - 0.1) + 1;
@@ -106,19 +105,19 @@ export function renderFieldMatrix(staticMatrix: number[][], fieldMatrix: number[
   }
 
   if (isGameOver) {
-    console.log('* GAME OVER');
+    // console.log('* GAME OVER');
     return { matrix: newFieldMatrix, gameState: gameStateEnum.nothing, returnPrevCoords: false, returnPrevSpin: false, isGameOver }
   } else if (!isPossiblePosition) {
-    console.log('* NOT POSSIBLE POSITION');
+    // console.log('* NOT POSSIBLE POSITION');
     return { matrix: fieldMatrix, gameState: gameStateEnum.movement, returnPrevCoords: true, returnPrevSpin: false }
   } else if (!isPossibleRotation) {
-    console.log('* NOT POSSIBLE ROTATION');
+    // console.log('* NOT POSSIBLE ROTATION');
     return { matrix: fieldMatrix, gameState: gameStateEnum.movement, returnPrevCoords: true, returnPrevSpin: true }
   } else if (isCollision) {
-    console.log('* IS COLLISION');
+    // console.log('* IS COLLISION');
     return { matrix: fieldMatrix, gameState: gameStateEnum.collision, returnPrevCoords: false, returnPrevSpin: false }
   } else {
-    console.log('* CONTINUE MOVEMENT');
+    // console.log('* CONTINUE MOVEMENT');
     return { matrix: newFieldMatrix, gameState: gameStateEnum.movement, returnPrevCoords: false, returnPrevSpin: false }
   }
 }
