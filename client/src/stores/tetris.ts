@@ -17,8 +17,8 @@ export const useTetrisStore = defineStore('tetris', () => {
   const score = ref(0);
   const frames = ref(-1);
   const fieldMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['filled']));
-  const staticMatrix = ref(getPresetMatrix());
-  //const staticMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']));
+  // const staticMatrix = ref(getPresetMatrix());
+  const staticMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']));
   const elementId = ref(-1);
   const nextElementId = ref(getRandomElementId(allElements.length, elementId.value));
   const elementSpin = ref(0);
@@ -28,11 +28,11 @@ export const useTetrisStore = defineStore('tetris', () => {
   const fallingSpeed = ref(calculateFallingSpeed(speedLevel.value, conf.speedIncreaseFactor));
   const movementSpeed: Ref<number> = ref(balanceMovementSpeed(conf.movementSpeed));
   const sideSpeed = ref(conf.sideSpeed);
-  const intervalIdFalling: Ref<number|null> = ref(null);
-  const intervalIdCleaning: Ref<number|null> = ref(null);
-  const keyPressed: Ref<{ [key: string]: boolean }> = ref({ ArrowUp: false, ArrowLeft: false, ArrowRight: false, ArrowDown: false, Space: false });
-  const keyInterval: Ref<{ [key: string]: number | null }> = ref({ ArrowUp: null, ArrowLeft: null, ArrowRight: null, ArrowDown: null, Space: null });
-  const cleaningState: Ref<{ byXAxis: number[]; byYAxis: number[] }> = ref({ byXAxis:[], byYAxis:[] });
+  const intervalIdFalling: Ref<number|undefined> = ref(undefined);
+  const intervalIdCleaning: Ref<number|undefined> = ref(undefined);
+  const keyPressed: Ref<{ [key:string]:boolean }> = ref({ ArrowUp: false, ArrowLeft: false, ArrowRight: false, ArrowDown: false, Space: false });
+  const keyInterval: Ref<{ [key:string]:number|undefined }> = ref({ ArrowUp: undefined, ArrowLeft: undefined, ArrowRight: undefined, ArrowDown: undefined, Space: undefined });
+  const cleaningState: Ref<{ byXAxis:number[];byYAxis:number[] }> = ref({ byXAxis:[], byYAxis:[] });
   const linesErasedCounter = ref(0);
 
   // LOGGING:
@@ -51,11 +51,11 @@ export const useTetrisStore = defineStore('tetris', () => {
     return `Frame<${frames.value}>`;
   }
   function myLog(logInfo: string) {
-    console.log(`
-      ${addFrames()} 
-      ${getAppAndGameStateLog()} 
-      ${logInfo}
-    `);
+    // console.log(`
+    //   ${addFrames()} 
+    //   ${getAppAndGameStateLog()} 
+    //   ${logInfo}
+    // `);
   }
 
   // GETTERS:
@@ -84,6 +84,7 @@ export const useTetrisStore = defineStore('tetris', () => {
   // ACTIONS:
   function startFalling(speed: number) {
     myLog("startFalling()");
+    stopFalling();
     if (appStateEnum[appState.value] == 'runned') {
       intervalIdFalling.value = setInterval(() => {
         if (appStateEnum[appState.value] == 'runned') {
@@ -95,14 +96,17 @@ export const useTetrisStore = defineStore('tetris', () => {
   }
   function stopFalling() {
     myLog("stopFalling()")
-    if (intervalIdFalling.value !== null) clearInterval(intervalIdFalling.value!);
-    intervalIdFalling.value = null;
+    if (intervalIdFalling.value !== undefined) {
+      clearInterval(intervalIdFalling.value!);
+      intervalIdFalling.value = undefined;
+    }
   }
   function startCleaning(speed:number) {
     myLog("startCleaning()");
+    stopCleaning();
     if (appStateEnum[appState.value] == 'runned') {
       intervalIdCleaning.value = setInterval(() => {
-        if (appStateEnum[appState.value] == 'runned' && intervalIdFalling.value === null) {
+        if (appStateEnum[appState.value] == 'runned' && intervalIdFalling.value === undefined) {
           myLog("startCleaning() -> intervalIdCleaning is active...");
           renderNewCleaningFrame();
         }
@@ -111,8 +115,10 @@ export const useTetrisStore = defineStore('tetris', () => {
   }
   function stopCleaning() {
     myLog("stopCleaning()");
-    if (intervalIdCleaning.value !== null) clearInterval(intervalIdCleaning.value!);
-    intervalIdCleaning.value = null;
+    if (intervalIdCleaning.value !== undefined) {
+      clearInterval(intervalIdCleaning.value!);
+      intervalIdCleaning.value = undefined;
+    }
   }
   function setWidth(newWidth: number) {
     myLog("setWidth()");
@@ -152,8 +158,8 @@ export const useTetrisStore = defineStore('tetris', () => {
     myLog("PREPARE TO set Game state to: " + gameStateEnum[newState] + "...");
     if (gameStateEnum[newState] == 'birth') {
       myLog("setGameState -> birth");
-      //elementId.value = nextElementId.value;
-      elementId.value = 1;
+      elementId.value = nextElementId.value;
+      // elementId.value = 1;
       nextElementId.value = getRandomElementId(allElements.length, elementId.value);
       elementSpin.value = 0;
       prevElementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), -1];
@@ -171,6 +177,7 @@ export const useTetrisStore = defineStore('tetris', () => {
       myLog("setGameState -> collision");
       updateCleaningState();
       if (cleaningState.value.byYAxis.length > 0) {
+        clearAllIntervals();
         stopFalling();
         startCleaning(conf.cleaningSpeed);
         setGameState(gameStateEnum.cleaning);
@@ -277,6 +284,15 @@ export const useTetrisStore = defineStore('tetris', () => {
     }
     updateFrames();
   }
+  function clearAllIntervals() {
+    const keysOfIntervals = Object.keys(keyInterval.value);
+    for(let key of keysOfIntervals) {
+      if (keyInterval.value[key] !== undefined) {
+        clearInterval(keyInterval.value[key]);
+        keyInterval.value[key] = undefined;
+      }
+    }
+  }
   function updateSpeedLevel() {
     myLog("updateSpeedLevel()");
     if (linesErasedCounter.value >= 10) {
@@ -303,32 +319,33 @@ export const useTetrisStore = defineStore('tetris', () => {
     speedLevel.value = newSpeedLevelValue;
     fallingSpeed.value = calculateFallingSpeed(newSpeedLevelValue, conf.speedIncreaseFactor);
     movementSpeed.value = balanceMovementSpeed(movementSpeed.value);
-    console.log("MOV: " + movementSpeed.value);
-    console.log("FAL: " + fallingSpeed.value);
   }
   function increaseSpeedLevel() {
     myLog("increaseSpeedLevel()");
     setSpeedLevel(speedLevel.value + 1);
   }
   function getStatsInConsole(place: string) {
-    myLog("*************** FRAME # [" + frames.value + "] IN <" + place + "> **************");
-    // myLog("width: " + width.value);
-    // myLog("height: " + height.value);
-    myLog("appState: " + appStateEnum[appState.value]);
-    myLog("gameState: " + gameStateEnum[gameState.value]);
-    // myLog("score: " + score.value);
-    // myLog("fieldMatrixSize: " + fieldMatrix.value[0].length + "/" + fieldMatrix.value.length);
-    // myLog("staticMatrixSize: " + staticMatrix.value[0].length + "/" + staticMatrix.value.length);
-    // myLog("prevElementId: " + prevElementId.value);
-    myLog("elementId: " + elementId.value);
-    myLog("elementSpin: " + elementSpin.value);
-    // myLog("prevElementCoords: " + prevElementCoords.value);
-    myLog("elementCoords: " + elementCoords.value);
-    // myLog("fallingSpeed: " + fallingSpeed.value);
-    myLog("intervalIdFalling: " + intervalIdFalling.value);
-    myLog(`keyPressed: { ArrowUp: ${keyPressed.value.ArrowUp}, ArrowLeft: ${keyPressed.value.ArrowLeft}, ArrowRight: ${keyPressed.value.ArrowRight}, ArrowDown: ${keyPressed.value.ArrowDown}, Space: ${keyPressed.value.Space} }`);
-    myLog(`keyInterval: { ArrowUp: ${keyInterval.value.ArrowUp}, ArrowLeft: ${keyInterval.value.ArrowLeft}, ArrowRight: ${keyInterval.value.ArrowRight}, ArrowDown: ${keyInterval.value.ArrowDown}, Space: ${keyInterval.value.Space} }`);
-    myLog("****************************************");
+    console.log("*************** FRAME # [" + frames.value + "] IN <" + place + "> **************");
+    // console.log("width: " + width.value);
+    // console.log("height: " + height.value);
+    console.log("appState: " + appStateEnum[appState.value]);
+    console.log("gameState: " + gameStateEnum[gameState.value]);
+    // console.log("score: " + score.value);
+    // console.log("fieldMatrixSize: " + fieldMatrix.value[0].length + "/" + fieldMatrix.value.length);
+    // console.log("staticMatrixSize: " + staticMatrix.value[0].length + "/" + staticMatrix.value.length);
+    // console.log("prevElementId: " + prevElementId.value);
+    // console.log("elementId: " + elementId.value);
+    // console.log("elementSpin: " + elementSpin.value);
+    // console.log("prevElementCoords: " + prevElementCoords.value);
+    // console.log("elementCoords: " + elementCoords.value);
+    // console.log("fallingSpeed: " + fallingSpeed.value);
+    console.log("intervalIdFalling: " + intervalIdFalling.value);
+    console.log("intervalIdCleaning: " + intervalIdCleaning.value);
+    // console.log(`keyPressed: { ArrowUp: ${keyPressed.value.ArrowUp}, ArrowLeft: ${keyPressed.value.ArrowLeft}, ArrowRight: ${keyPressed.value.ArrowRight}, ArrowDown: ${keyPressed.value.ArrowDown}, Space: ${keyPressed.value.Space} }`);
+    // console.log(`keyInterval: { ArrowUp: ${keyInterval.value.ArrowUp}, ArrowLeft: ${keyInterval.value.ArrowLeft}, ArrowRight: ${keyInterval.value.ArrowRight}, ArrowDown: ${keyInterval.value.ArrowDown}, Space: ${keyInterval.value.Space} }`);
+    console.log(`keyPressed: { ArrowDown: ${keyPressed.value.ArrowDown} }`);
+    console.log(`keyInterval: { ArrowDown: ${keyInterval.value.ArrowDown} }`);
+    console.log("****************************************");
   }
 
   return { 

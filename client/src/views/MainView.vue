@@ -30,7 +30,6 @@ useKeyupEvent((event: KeyboardEvent) => {
     if (appStateEnum[tetrisStore.getAppState] == 'runned' && gameStateEnum[tetrisStore.getGameState] == 'movement') {
       if (!tetrisStore.getKeyInterval[event.code]) {
         handleKeyPress(event.code);
-        console.log('aaaaaabl')
         tetrisStore.getKeyInterval[event.code] = setInterval(() => 
           event.code !== "Space" ? handleKeyPress(event.code) : {}, 
           (event.code === "ArrowLeft" || event.code === "ArrowRight") ? tetrisStore.getSideSpeed : tetrisStore.getMovementSpeed
@@ -40,9 +39,8 @@ useKeyupEvent((event: KeyboardEvent) => {
   } else if (event.type === 'keyup') {
     tetrisStore.getKeyPressed[event.code] = false;
     if (tetrisStore.getKeyInterval[event.code]) {
-      console.log("blaaaaa");
       clearInterval(tetrisStore.getKeyInterval[event.code]!);
-      tetrisStore.getKeyInterval[event.code] = null;
+      tetrisStore.getKeyInterval[event.code] = undefined;
     }
   }
 });
