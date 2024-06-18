@@ -7,10 +7,13 @@ export default {
     min: 20,
     max: 28
   },
+  defaultWidth: 20,
+  defaultHeight: 20,
   speedLevels: {
     min: 0,
     max: 29
   },
+  defaultSpeedLevel: 0,
   elementsIcons: [
     'tetris-icons-1-1.png',
     'tetris-icons-2.png',
@@ -20,10 +23,9 @@ export default {
     'tetris-icons-1-2.png',
     'tetris-icons-4-2.png',
   ],
-  speedCoefficient: 1.6,
+  speedIncreaseFactor: 1.62, // Only in the range of 0.01 - 1.62!
   linesScore: [ 40, 100, 300, 1200 ],
-  fallingSpeed: 500,
-  movementSpeed: 50,
-  sideSpeed: 75,
-  cleaningSpeed: 25
+  movementSpeed: 50, // optimal - 50
+  sideSpeed: 75, // optimal - 75
+  cleaningSpeed: 25 // optimal - 25
 }

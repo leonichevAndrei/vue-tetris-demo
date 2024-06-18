@@ -3,36 +3,38 @@ import { computed, ref, type Ref } from "vue"
 import { appStateEnum, gameStateEnum } from "@/config/tetris.enums";
 import { generateAnyFieldMatrix, renderFieldMatrix, getMiddlePosition, getPresetMatrix, getCleaningStateByStaticMatrix, renderCleanedFieldMatrix, combineStaticMatrixPartsInOne } from "@/utills/tetris.store.utills";
 import { generateFieldTypes } from "@/config/tetris.enums";
-import { getRandomElementId } from "@/utills/common.utills";
+import { calculateFallingSpeed, calculateScorePoints, getRandomElementId } from "@/utills/common.utills";
 import allElements from '@/assets/elements/all-elms';
 import conf from '@/config/tetris.config.ts';
 
 export const useTetrisStore = defineStore('tetris', () => {
 
   // STATE:
-  const width = ref(conf.width.min);
-  const height = ref(conf.height.min);
+  const width = ref(conf.defaultWidth);
+  const height = ref(conf.defaultHeight);
   const appState = ref(appStateEnum.init);
   const gameState = ref(gameStateEnum.nothing);
   const score = ref(0);
   const frames = ref(-1);
   const fieldMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['filled']));
-  // const staticMatrix = ref(getPresetMatrix());
-  const staticMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']));
-  const prevElementId = ref(-1);
-  const elementId = ref(0);
+  const staticMatrix = ref(getPresetMatrix());
+  //const staticMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']));
+  const elementId = ref(-1);
+  const nextElementId = ref(getRandomElementId(allElements.length, elementId.value));
   const elementSpin = ref(0);
-  const prevElementCoords = ref([getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), -1]);
-  const elementCoords = ref([getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), 0]);
-  const fallingSpeed = ref(conf.fallingSpeed);
-  const movementSpeed = ref(conf.movementSpeed);
+  const prevElementCoords = ref([0,1]);
+  const elementCoords = ref([0,0]); 
+  const speedLevel = ref(conf.defaultSpeedLevel);
+  const fallingSpeed = ref(calculateFallingSpeed(speedLevel.value, conf.speedIncreaseFactor));
+  const movementSpeed: Ref<number> = ref(balanceMovementSpeed(conf.movementSpeed));
   const sideSpeed = ref(conf.sideSpeed);
   const intervalIdFalling: Ref<number|null> = ref(null);
   const intervalIdCleaning: Ref<number|null> = ref(null);
   const keyPressed: Ref<{ [key: string]: boolean }> = ref({ ArrowUp: false, ArrowLeft: false, ArrowRight: false, ArrowDown: false, Space: false });
   const keyInterval: Ref<{ [key: string]: number | null }> = ref({ ArrowUp: null, ArrowLeft: null, ArrowRight: null, ArrowDown: null, Space: null });
   const cleaningState: Ref<{ byXAxis: number[]; byYAxis: number[] }> = ref({ byXAxis:[], byYAxis:[] });
-  
+  const linesErasedCounter = ref(0);
+
   // LOGGING:
   const startTimestamp = performance.now();
   function getMSLog() {
@@ -49,11 +51,11 @@ export const useTetrisStore = defineStore('tetris', () => {
     return `Frame<${frames.value}>`;
   }
   function myLog(logInfo: string) {
-    // console.log(`
-    //   ${addFrames()} 
-    //   ${getAppAndGameStateLog()} 
-    //   ${logInfo}
-    // `);
+    console.log(`
+      ${addFrames()} 
+      ${getAppAndGameStateLog()} 
+      ${logInfo}
+    `);
   }
 
   // GETTERS:
@@ -75,6 +77,9 @@ export const useTetrisStore = defineStore('tetris', () => {
   const getSideSpeed = computed(() => sideSpeed.value);
   const getKeyPressed = computed(() => keyPressed.value);
   const getKeyInterval = computed(() => keyInterval.value);
+  const getNextElementId = computed(() => nextElementId.value);
+  const getSpeedLevel = computed(() => speedLevel.value);
+  const getLinesErasedCounter = computed(() => linesErasedCounter.value);
 
   // ACTIONS:
   function startFalling(speed: number) {
@@ -139,19 +144,17 @@ export const useTetrisStore = defineStore('tetris', () => {
       myLog("setAppState -> finished");
       appState.value = newState;
       setGameState(gameStateEnum.nothing);
-      console.log("before");
       setTimeout(() => {
       }, 2000);
-      console.log("after");
     }
   }
   function setGameState(newState: gameStateEnum) {
     myLog("PREPARE TO set Game state to: " + gameStateEnum[newState] + "...");
     if (gameStateEnum[newState] == 'birth') {
       myLog("setGameState -> birth");
-      prevElementId.value = elementId.value;
-      // elementId.value = 1;
-      elementId.value = getRandomElementId(allElements.length, prevElementId.value);
+      //elementId.value = nextElementId.value;
+      elementId.value = 1;
+      nextElementId.value = getRandomElementId(allElements.length, elementId.value);
       elementSpin.value = 0;
       prevElementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), -1];
       elementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), 0];
@@ -183,9 +186,9 @@ export const useTetrisStore = defineStore('tetris', () => {
       stopFalling();
     }
   }
-  function updateGameScore(addPoints: number) {
+  function updateGameScore(linesWasCleared: number) {
     myLog("updateGameScore()");
-    score.value += addPoints;
+    score.value += calculateScorePoints(linesWasCleared, speedLevel.value, conf.linesScore);
   }
   function resetGameScore() {
     myLog("resetGameScore()");
@@ -252,19 +255,34 @@ export const useTetrisStore = defineStore('tetris', () => {
     staticMatrix.value = result.nextStaticMatrix;
     fieldMatrix.value = result.nextStaticMatrix;
     cleaningState.value = result.nextCleaningState;
+    // If cleaning is over:
     if (result.nextCleaningState.byXAxis.length == 0) {
+      myLog("renderNewCleaningFrame() -> cleaning is over");
       stopCleaning();
       const newStaticMatrix = combineStaticMatrixPartsInOne({ staticMatrix: result.nextStaticMatrix, lines: result.nextCleaningState.byYAxis });
       staticMatrix.value = newStaticMatrix;
       fieldMatrix.value = newStaticMatrix;
       setTimeout(() => {
+        const linesErased = result.nextCleaningState.byYAxis.length;
+        linesErasedCounter.value += linesErased;
+        updateGameScore(linesErased);
+        updateSpeedLevel();
         setGameState(gameStateEnum.birth);
       }, conf.cleaningSpeed);
+    // Else - to continue cleaning process:
     } else {
+      myLog("renderNewCleaningFrame() -> continue cleaning...");
       staticMatrix.value = result.nextStaticMatrix;
       fieldMatrix.value = result.nextStaticMatrix;
     }
     updateFrames();
+  }
+  function updateSpeedLevel() {
+    myLog("updateSpeedLevel()");
+    if (linesErasedCounter.value >= 10) {
+      linesErasedCounter.value -= 10;
+      increaseSpeedLevel();
+    }
   }
   function elementCoordsUpdate(relativeCoords: number[]) {
     myLog("elementCoordsUpdate()");
@@ -275,6 +293,22 @@ export const useTetrisStore = defineStore('tetris', () => {
   function updateCleaningState() {
     myLog("updateCleaningState()");
     cleaningState.value = getCleaningStateByStaticMatrix(staticMatrix.value);
+  }
+  function balanceMovementSpeed(movementSpeedValue: number) {
+    myLog("balanceMovementSpeed()");
+    return JSON.parse(JSON.stringify((fallingSpeed.value > movementSpeedValue ? conf.movementSpeed : fallingSpeed.value)));
+  }
+  function setSpeedLevel(newSpeedLevelValue: number) {
+    myLog("setSpeedLevel()");
+    speedLevel.value = newSpeedLevelValue;
+    fallingSpeed.value = calculateFallingSpeed(newSpeedLevelValue, conf.speedIncreaseFactor);
+    movementSpeed.value = balanceMovementSpeed(movementSpeed.value);
+    console.log("MOV: " + movementSpeed.value);
+    console.log("FAL: " + fallingSpeed.value);
+  }
+  function increaseSpeedLevel() {
+    myLog("increaseSpeedLevel()");
+    setSpeedLevel(speedLevel.value + 1);
   }
   function getStatsInConsole(place: string) {
     myLog("*************** FRAME # [" + frames.value + "] IN <" + place + "> **************");
@@ -316,6 +350,9 @@ export const useTetrisStore = defineStore('tetris', () => {
     getSideSpeed,
     getKeyPressed,
     getKeyInterval,
+    getNextElementId,
+    getSpeedLevel,
+    getLinesErasedCounter,
     startFalling,
     stopFalling,
     setWidth,
@@ -329,6 +366,7 @@ export const useTetrisStore = defineStore('tetris', () => {
     backToPrevSpin,
     updateSpin,
     renderNewFrame,
+    setSpeedLevel,
     getStatsInConsole
   }
 });

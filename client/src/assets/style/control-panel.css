@@ -36,6 +36,9 @@
 .menu-item {
     padding: 10px 10px 0;
 }
+.menu-item input {
+    max-width: 74px;
+}
 .menu-item button {
     width: 416px;
     height: 24px;

@@ -1,8 +1,9 @@
 <script setup lang='ts'>
 import ControlPanelButton from './ControlPanelButton.vue';
 import ControlPanelInput from './ControlPanelInput.vue';
+import InfoPanel from './InfoPanel.vue';
 import conf from '@/config/tetris.config.ts';
-import { appStateEnum, gameStateEnum } from '@/config/tetris.enums';
+import { appStateEnum } from '@/config/tetris.enums';
 import { useTetrisStore } from '@/stores/tetris';
 const tetrisStore = useTetrisStore();
 </script>
@@ -12,6 +13,7 @@ const tetrisStore = useTetrisStore();
     <div v-if="appStateEnum[tetrisStore.getAppState]=='init'" class='line'>
       <ControlPanelInput title='Width' :range="conf.width" :value="tetrisStore.getWidth" :updateStoreFunc="tetrisStore.setWidth" />
       <ControlPanelInput title='Height' :range="conf.height" :value="tetrisStore.getHeight" :updateStoreFunc="tetrisStore.setHeight" />
+      <ControlPanelInput title='Speed' :range="conf.speedLevels" :value="tetrisStore.getSpeedLevel" :updateStoreFunc="tetrisStore.setSpeedLevel" />
     </div>
     <div v-if="appStateEnum[tetrisStore.getAppState]=='init'" class='line'>
       <ControlPanelButton title='Start Game' :appState='appStateEnum.runned' />
@@ -22,31 +24,9 @@ const tetrisStore = useTetrisStore();
     <div v-if="appStateEnum[tetrisStore.getAppState]=='finished'" class='line'>
       <ControlPanelButton title='New Game' :appState='appStateEnum.init' />
     </div>
-    <!-- <div class='line'>
-      App state: {{ appStateEnum[tetrisStore.getAppState] }}
+    <div v-if="appStateEnum[tetrisStore.getAppState]!='init'" class='line'>
+      <InfoPanel />
     </div>
-    <div class='line'>
-      Game state: {{ gameStateEnum[tetrisStore.getGameState] }}
-    </div> -->
-    <!-- <div class='line'>
-      Width: {{ tetrisStore.getWidth }} / Height {{ tetrisStore.getHeight }}
-    </div> -->
-    <!-- <div class='line'>
-      Coords: {{ "x: " + tetrisStore.getElementCoords[0] + " / y: " + tetrisStore.getElementCoords[1] + " (frames: " + tetrisStore.getFrames }})
-    </div> -->
-    <div class='line'>
-      <div class='info'>
-        <div class='left'>Speed:&nbsp;<span>16</span></div>
-        <div class='center'>Score:&nbsp;<span>156980</span></div>
-        <div class='right'>
-          <div>Next:&nbsp;</div>
-          <div class="elm2"><img src="../../assets/images/tetris-icons-2.png" /></div>
-        </div>
-      </div>
-    </div>
-    <!-- <div class='line info-line'>
-      {{ `Score: 4200 | Speed: 16` }})
-    </div> -->
   </div>
 </template>
 

@@ -28,7 +28,7 @@
   flex-direction: column;
   position: absolute;
   left: calc(50% - 60px);
-  top: calc(50% + 24px);
+  top: calc(50% - 2px);
 }
 .game-over p {
   text-align: center;
