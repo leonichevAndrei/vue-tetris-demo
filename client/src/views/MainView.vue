@@ -26,21 +26,30 @@ watch(() => tetrisStore.getKeyPressed.ArrowDown, key => stopFallingWhileKeyDown(
 
 useKeyupEvent((event: KeyboardEvent) => {
   if (event.type === 'keydown') {
-    tetrisStore.getKeyPressed[event.code] = true;
-    if (appStateEnum[tetrisStore.getAppState] == 'runned' && gameStateEnum[tetrisStore.getGameState] == 'movement') {
-      if (!tetrisStore.getKeyInterval[event.code]) {
-        handleKeyPress(event.code);
-        tetrisStore.getKeyInterval[event.code] = setInterval(() => 
-          event.code !== "Space" ? handleKeyPress(event.code) : {}, 
-          (event.code === "ArrowLeft" || event.code === "ArrowRight") ? tetrisStore.getSideSpeed : tetrisStore.getMovementSpeed
-        );
+    if (event.code === 'ArrowUp' || event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowDown' || event.code === 'Space') {
+      tetrisStore.getKeyPressed[event.code] = true;
+      if (appStateEnum[tetrisStore.getAppState] == 'runned' && gameStateEnum[tetrisStore.getGameState] == 'movement') {
+        if (!tetrisStore.getKeyInterval[event.code]) {
+          handleKeyPress(event.code);
+          tetrisStore.getKeyInterval[event.code] = setInterval(() => 
+            event.code !== "Space" ? handleKeyPress(event.code) : {}, 
+            (event.code === "ArrowLeft" || event.code === "ArrowRight") ? tetrisStore.getSideSpeed : tetrisStore.getMovementSpeed
+          );
+        }
+      }
+    } else {
+      if (event.code === 'Enter') {
+        tetrisStore.goToNextAppState();
       }
     }
+    
   } else if (event.type === 'keyup') {
-    tetrisStore.getKeyPressed[event.code] = false;
-    if (tetrisStore.getKeyInterval[event.code]) {
-      clearInterval(tetrisStore.getKeyInterval[event.code]!);
-      tetrisStore.getKeyInterval[event.code] = undefined;
+    if (event.code === 'ArrowUp' || event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowDown' || event.code === 'Space') {
+      tetrisStore.getKeyPressed[event.code] = false;
+      if (tetrisStore.getKeyInterval[event.code]) {
+        clearInterval(tetrisStore.getKeyInterval[event.code]!);
+        tetrisStore.getKeyInterval[event.code] = undefined;
+      }
     }
   }
 });
@@ -63,7 +72,6 @@ function handleKeyPress(key: string) {
       case 'Space':
         tetrisStore.updateSpin();
         tetrisStore.renderNewFrame([0, 0]);
-        break;
     }
   }
 }

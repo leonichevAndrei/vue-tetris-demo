@@ -82,6 +82,13 @@ export const useTetrisStore = defineStore('tetris', () => {
   const getLinesErasedCounter = computed(() => linesErasedCounter.value);
 
   // ACTIONS:
+  function goToNextAppState() {
+    let nextAppState = getAppState.value + 1;
+    if (appStateEnum[nextAppState] === undefined) {
+      nextAppState = 0;
+    }
+    setAppState(nextAppState);
+  }
   function startFalling(speed: number) {
     myLog("startFalling()");
     stopFalling();
@@ -125,7 +132,6 @@ export const useTetrisStore = defineStore('tetris', () => {
     width.value = newWidth;
     staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']);
     myLog('setWidth from ' + width.value + " to " + newWidth);
-    elementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), 0];
   }
   function setHeight(newHeight: number) {
     myLog("setHeight()");
@@ -370,6 +376,7 @@ export const useTetrisStore = defineStore('tetris', () => {
     getNextElementId,
     getSpeedLevel,
     getLinesErasedCounter,
+    goToNextAppState,
     startFalling,
     stopFalling,
     setWidth,

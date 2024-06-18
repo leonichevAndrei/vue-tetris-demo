@@ -8,8 +8,8 @@ const imgSrc = computed(() => '/src/assets/images/' + conf.elementsIcons[tetrisS
 </script>
 
 <template>
-  <div class='info'>
-    <div class='left'>Speed:&nbsp;<span>{{ tetrisStore.getSpeedLevel }}</span>&nbsp;[{{ tetrisStore.getFallingSpeed }} ms]</div>
+  <div class='elements-block'>
+    <div class='left'>Speed:&nbsp;<span>{{ tetrisStore.getSpeedLevel }}</span>&nbsp;<p>[{{ tetrisStore.getFallingSpeed }} ms]</p></div>
     <div class='center'>Score:&nbsp;<span>{{ tetrisStore.getScore }}</span></div>
     <div class='right'>
       <div>Next:&nbsp;</div>
