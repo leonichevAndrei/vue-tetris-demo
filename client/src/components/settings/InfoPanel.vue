@@ -4,7 +4,7 @@ import conf from '@/config/tetris.config.ts';
 import { useTetrisStore } from '@/stores/tetris';
 const tetrisStore = useTetrisStore();
 
-const imgSrc = computed(() => '/src/assets/images/' + conf.elementsIcons[tetrisStore.getNextElementId]);
+const imgSrc = computed(() => '/images/' + conf.elementsIcons[tetrisStore.getNextElementId]);
 </script>
 
 <template>
