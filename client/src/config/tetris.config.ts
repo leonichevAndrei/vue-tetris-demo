@@ -1,14 +1,14 @@
 export default {
   width: {
-    min: 20,
+    min: 18,
     max: 60
   },
   height: {
     min: 20,
     max: 28
   },
-  defaultWidth: 20,
-  defaultHeight: 20,
+  defaultWidth: 18,
+  defaultHeight: 24,
   speedLevels: {
     min: 0,
     max: 29
