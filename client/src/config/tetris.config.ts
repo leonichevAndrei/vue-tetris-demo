@@ -8,7 +8,7 @@ export default {
     max: 28
   },
   defaultWidth: 18,
-  defaultHeight: 24,
+  defaultHeight: 28,
   speedLevels: {
     min: 0,
     max: 29
