@@ -20,6 +20,13 @@ export function useKeyupEvent(handler: (event: KeyboardEvent) => void) {
     document.removeEventListener('keyup', handler);
   });
 }
+export function triggerKeyEvent(key: string) {
+  console.log(key);
+  const keydownEvent = new KeyboardEvent('keydown', { key });
+  console.log(document.dispatchEvent(keydownEvent));
+  const keyupEvent = new KeyboardEvent('keyup', { key });
+  document.dispatchEvent(keyupEvent);
+}
 export function calculateScorePoints(linesWasCleared: number, speedLevel: number, linesScore: number[]) {
   return linesScore[linesWasCleared-1] * (speedLevel + 1);
 }

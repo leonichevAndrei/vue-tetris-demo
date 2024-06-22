@@ -2,6 +2,7 @@
 import { ref, watch, computed, type Ref } from 'vue';
 import ControlPanel from '../components/settings/ControlPanel.vue'
 import Field from '../components/field/Field.vue'
+import TouchControls from '../components/field/TouchControls.vue';
 import { appStateEnum, gameStateEnum } from '@/config/tetris.enums';
 import { useTetrisStore } from '@/stores/tetris';
 import { useKeyupEvent } from '@/utills/common.utills';
@@ -26,7 +27,7 @@ watch(() => tetrisStore.getKeyPressed.ArrowDown, key => stopFallingWhileKeyDown(
 
 useKeyupEvent((event: KeyboardEvent) => {
   if (event.type === 'keydown') {
-    if (event.code === 'ArrowUp' || event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowDown' || event.code === 'Space') {
+    if (event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowDown' || event.code === 'Space') {
       tetrisStore.getKeyPressed[event.code] = true;
       if (appStateEnum[tetrisStore.getAppState] == 'runned' && gameStateEnum[tetrisStore.getGameState] == 'movement') {
         if (!tetrisStore.getKeyInterval[event.code]) {
@@ -44,7 +45,7 @@ useKeyupEvent((event: KeyboardEvent) => {
     }
     
   } else if (event.type === 'keyup') {
-    if (event.code === 'ArrowUp' || event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowDown' || event.code === 'Space') {
+    if (event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowDown' || event.code === 'Space') {
       tetrisStore.getKeyPressed[event.code] = false;
       if (tetrisStore.getKeyInterval[event.code]) {
         clearInterval(tetrisStore.getKeyInterval[event.code]!);
@@ -91,6 +92,7 @@ function stopFallingWhileKeyDown(keyState: boolean) {
   <div class='main-view' :id="templateIdForUpdate">
     <ControlPanel />
     <Field :width="width" :height="height" />
+    <TouchControls />
   </div>
 </template>
 

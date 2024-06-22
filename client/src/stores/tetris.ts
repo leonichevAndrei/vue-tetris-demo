@@ -1,7 +1,7 @@
 import { defineStore } from "pinia"
 import { computed, ref, type Ref } from "vue"
 import { appStateEnum, gameStateEnum } from "@/config/tetris.enums";
-import { generateAnyFieldMatrix, renderFieldMatrix, getMiddlePosition, getPresetMatrix, getCleaningStateByStaticMatrix, renderCleanedFieldMatrix, combineStaticMatrixPartsInOne } from "@/utills/tetris.store.utills";
+import { generateAnyFieldMatrix, renderFieldMatrix, getMiddlePosition, getPresetMatrix, getCleaningStateByStaticMatrix, renderCleanedFieldMatrix, combineStaticMatrixPartsInOne, calculateSizePixels } from "@/utills/tetris.store.utills";
 import { generateFieldTypes } from "@/config/tetris.enums";
 import { calculateFallingSpeed, calculateScorePoints, getRandomElementId } from "@/utills/common.utills";
 import allElements from '@/assets/elements/all-elms';
@@ -12,6 +12,8 @@ export const useTetrisStore = defineStore('tetris', () => {
   // STATE:
   const width = ref(conf.defaultWidth);
   const height = ref(conf.defaultHeight);
+  const widthPixels = ref(calculateSizePixels(width.value));
+  const heightPixels = ref(calculateSizePixels(height.value));
   const appState = ref(appStateEnum.init);
   const gameState = ref(gameStateEnum.nothing);
   const score = ref(0);
@@ -63,6 +65,8 @@ export const useTetrisStore = defineStore('tetris', () => {
   const getWidthRef = () => width;
   const getHeight = computed(() => height.value);
   const getHeightRef = () => height;
+  const getWidthPixelsRef = () => widthPixels;
+  const getHeightPixelsRef = () => heightPixels;
   const getAppState = computed(() => appState.value);
   const getAppStateRef = () => appState;
   const getGameState = computed(() => gameState.value);
@@ -130,12 +134,14 @@ export const useTetrisStore = defineStore('tetris', () => {
   function setWidth(newWidth: number) {
     myLog("setWidth()");
     width.value = newWidth;
+    widthPixels.value = calculateSizePixels(newWidth);
     staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']);
     myLog('setWidth from ' + width.value + " to " + newWidth);
   }
   function setHeight(newHeight: number) {
     myLog("setHeight()");
     height.value = newHeight;
+    heightPixels.value = calculateSizePixels(newHeight);
     staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']);
     myLog('setHeight from ' + height.value + " to " + newHeight);
   }
@@ -359,6 +365,8 @@ export const useTetrisStore = defineStore('tetris', () => {
     getWidthRef, 
     getHeight,
     getHeightRef,
+    getWidthPixelsRef,
+    getHeightPixelsRef,
     getAppState,
     getAppStateRef,
     getGameState,

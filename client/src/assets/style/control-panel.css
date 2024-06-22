@@ -1,6 +1,7 @@
 .control-panel {
     padding-bottom: 10px;
     flex-direction: column;
+    z-index: 100;
 }
 .control-panel .line {
     justify-content: center;

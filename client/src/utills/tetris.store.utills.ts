@@ -160,3 +160,10 @@ export function combineStaticMatrixPartsInOne(data: { staticMatrix: number[][]; 
   matrix.unshift(...addedPart);
   return matrix;
 }
+export function calculateSizePixels(size: number) {
+  const ceilSize = 16;
+  const ceilMargin = 3;
+  const fieldPadding = 3;
+  const fieldBorder = 1;
+  return (ceilSize + ceilMargin * 2 ) * size + ((fieldPadding + fieldBorder) * 2);
+}
