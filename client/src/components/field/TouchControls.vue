@@ -15,27 +15,27 @@ useKeyEvents();
       <div class="top">
         <div class="arrowLeft">
           <button 
-            @touchstart="triggerKeyDownEvent('ArrowLeft')" 
-            @touchend="triggerKeyUpEvent('ArrowLeft')"
+            @touchstart.prevent="triggerKeyDownEvent('ArrowLeft')" 
+            @touchend.prevent="triggerKeyUpEvent('ArrowLeft')"
           />
         </div>
         <div class="space">
           <button 
-            @touchstart="triggerKeyDownEvent('Space')" 
-            @touchend="triggerKeyUpEvent('Space')"
+            @touchstart.prevent="triggerKeyDownEvent('Space')" 
+            @touchend.prevent="triggerKeyUpEvent('Space')"
           />
         </div>
         <div class="arrowRight">
           <button 
-            @touchstart="triggerKeyDownEvent('ArrowRight')" 
-            @touchend="triggerKeyUpEvent('ArrowRight')"
+            @touchstart.prevent="triggerKeyDownEvent('ArrowRight')" 
+            @touchend.prevent="triggerKeyUpEvent('ArrowRight')"
           />
         </div>
       </div>
       <div class="arrowDown">
         <button 
-          @touchstart="triggerKeyDownEvent('ArrowDown')" 
-          @touchend="triggerKeyUpEvent('ArrowDown')"
+          @touchstart.prevent="triggerKeyDownEvent('ArrowDown')" 
+          @touchend.prevent="triggerKeyUpEvent('ArrowDown')"
         />
       </div>
     </div>
