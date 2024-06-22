@@ -13,11 +13,39 @@ useKeyEvents();
   <div class="touch-controls" :style="{ width: widthPixels.value + 'px', height: heightPixels.value + 'px'}">
     <div class="touch-controls-in">
       <div class="top">
-        <div class="arrowLeft"><button @mouseup="triggerKeyUpEvent('ArrowLeft')" @mousedown="triggerKeyDownEvent('ArrowLeft')"></button></div>
-        <div class="space"><button @mouseup="triggerKeyUpEvent('Space')" @mousedown="triggerKeyDownEvent('Space')"></button></div>
-        <div class="arrowRight"><button @mouseup="triggerKeyUpEvent('ArrowRight')" @mousedown="triggerKeyDownEvent('ArrowRight')"></button></div>
+        <div class="arrowLeft">
+          <button 
+            @touchstart="triggerKeyDownEvent('ArrowLeft')" 
+            @touchend="triggerKeyUpEvent('ArrowLeft')" 
+            @mousedown="triggerKeyDownEvent('ArrowLeft')" 
+            @mouseup="triggerKeyUpEvent('ArrowLeft')">
+          </button>
+        </div>
+        <div class="space">
+          <button 
+            @touchstart="triggerKeyDownEvent('Space')" 
+            @touchend="triggerKeyUpEvent('Space')" 
+            @mousedown="triggerKeyDownEvent('Space')" 
+            @mouseup="triggerKeyUpEvent('Space')">
+          </button>
+        </div>
+        <div class="arrowRight">
+          <button 
+            @touchstart="triggerKeyDownEvent('ArrowRight')" 
+            @touchend="triggerKeyUpEvent('ArrowRight')" 
+            @mousedown="triggerKeyDownEvent('ArrowRight')" 
+            @mouseup="triggerKeyUpEvent('ArrowRight')">
+          </button>
+        </div>
       </div>
-      <div class="arrowDown"><button @mouseup="triggerKeyUpEvent('ArrowDown')" @mousedown="triggerKeyDownEvent('ArrowDown')"></button></div>
+      <div class="arrowDown">
+        <button 
+          @touchstart="triggerKeyDownEvent('ArrowDown')" 
+          @touchend="triggerKeyUpEvent('ArrowDown')" 
+          @mousedown="triggerKeyDownEvent('ArrowDown')" 
+          @mouseup="triggerKeyUpEvent('ArrowDown')">
+        </button>
+      </div>
     </div>
   </div>
 </template>
