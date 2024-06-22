@@ -16,35 +16,27 @@ useKeyEvents();
         <div class="arrowLeft">
           <button 
             @touchstart="triggerKeyDownEvent('ArrowLeft')" 
-            @touchend="triggerKeyUpEvent('ArrowLeft')" 
-            @mousedown="triggerKeyDownEvent('ArrowLeft')" 
-            @mouseup="triggerKeyUpEvent('ArrowLeft')">
-          </button>
+            @touchend="triggerKeyUpEvent('ArrowLeft')"
+          />
         </div>
         <div class="space">
           <button 
             @touchstart="triggerKeyDownEvent('Space')" 
-            @touchend="triggerKeyUpEvent('Space')" 
-            @mousedown="triggerKeyDownEvent('Space')" 
-            @mouseup="triggerKeyUpEvent('Space')">
-          </button>
+            @touchend="triggerKeyUpEvent('Space')"
+          />
         </div>
         <div class="arrowRight">
           <button 
             @touchstart="triggerKeyDownEvent('ArrowRight')" 
-            @touchend="triggerKeyUpEvent('ArrowRight')" 
-            @mousedown="triggerKeyDownEvent('ArrowRight')" 
-            @mouseup="triggerKeyUpEvent('ArrowRight')">
-          </button>
+            @touchend="triggerKeyUpEvent('ArrowRight')"
+          />
         </div>
       </div>
       <div class="arrowDown">
         <button 
           @touchstart="triggerKeyDownEvent('ArrowDown')" 
-          @touchend="triggerKeyUpEvent('ArrowDown')" 
-          @mousedown="triggerKeyDownEvent('ArrowDown')" 
-          @mouseup="triggerKeyUpEvent('ArrowDown')">
-        </button>
+          @touchend="triggerKeyUpEvent('ArrowDown')"
+        />
       </div>
     </div>
   </div>
