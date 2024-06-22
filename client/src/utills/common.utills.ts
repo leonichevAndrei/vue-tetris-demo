@@ -1,5 +1,3 @@
-import { onMounted, onUnmounted } from "vue";
-
 export function getMillisecondsByFPS(fps: number) {
   return Math.ceil(1000 / fps);
 }
@@ -9,23 +7,6 @@ export function getRandomElementId(length: any, prevElementId: number) {
 }
 export function getRandomFromX(count: number) {
   return Math.ceil(Math.random() * count);
-}
-export function useKeyupEvent(handler: (event: KeyboardEvent) => void) {
-  onMounted(() => {
-    document.addEventListener('keydown', handler);
-    document.addEventListener('keyup', handler);
-  });
-  onUnmounted(() => {
-    document.removeEventListener('keydown', handler);
-    document.removeEventListener('keyup', handler);
-  });
-}
-export function triggerKeyEvent(key: string) {
-  console.log(key);
-  const keydownEvent = new KeyboardEvent('keydown', { key });
-  console.log(document.dispatchEvent(keydownEvent));
-  const keyupEvent = new KeyboardEvent('keyup', { key });
-  document.dispatchEvent(keyupEvent);
 }
 export function calculateScorePoints(linesWasCleared: number, speedLevel: number, linesScore: number[]) {
   return linesScore[linesWasCleared-1] * (speedLevel + 1);

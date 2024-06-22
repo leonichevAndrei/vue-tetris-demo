@@ -44,10 +44,10 @@
 .touch-controls-in {
   width: 100%;
   height: 100%;
-  border: 1px solid red;
+  /*border: 1px solid red;*/
   position: relative;
   top: 68px;
-  left: 420px;
+  /*left: 420px;*/
   border-radius: 6px;
   flex-direction: column;
 }
@@ -58,24 +58,22 @@
 .touch-controls-in .top .arrowLeft {
   width: 35%;
   height: 100%;
-  background-color: bisque;
 }
 .touch-controls-in .top .space {
   width: 35%;
   height: 100%;
-  background-color: blanchedalmond;
 }
 .touch-controls-in .top .arrowRight {
   width: 35%;
   height: 100%;
-  background-color: beige;
 }
 .touch-controls-in .arrowDown {
   width: 100%;
   height: 20%;
-  background-color: aquamarine;
 }
 .touch-controls-in button {
   width: 100%;
   height: 100%;
+  background: none;
+  border: none;
 }

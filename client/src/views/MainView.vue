@@ -1,91 +1,18 @@
 <script setup lang='ts'>
-import { ref, watch, computed, type Ref } from 'vue';
+import { computed, type Ref } from 'vue';
 import ControlPanel from '../components/settings/ControlPanel.vue'
 import Field from '../components/field/Field.vue'
 import TouchControls from '../components/field/TouchControls.vue';
-import { appStateEnum, gameStateEnum } from '@/config/tetris.enums';
+import { useKeyEvents } from '@/utills/key.events.utills';
+import { useDimensionsChange } from '@/utills/hooks.utills';
 import { useTetrisStore } from '@/stores/tetris';
-import { useKeyupEvent } from '@/utills/common.utills';
 const tetrisStore = useTetrisStore();
+let width: Ref<number>;
+let height: Ref<number>;
 
 let templateIdForUpdate = computed(() => 'mainViewId' + tetrisStore.getFramesRef().value);
-const width = ref(tetrisStore.getWidth);
-const height = ref(tetrisStore.getHeight);
-
-watch(tetrisStore.getWidthRef(), newWidth => {
-  console.log("width changed");
-  width.value = newWidth;
-});
-
-watch(tetrisStore.getHeightRef(), newHeight => {  
-  console.log("height changed");
-  height.value = newHeight;
-});
-
-watch(() => tetrisStore.getKeyPressed.ArrowUp, key => stopFallingWhileKeyDown(key));
-watch(() => tetrisStore.getKeyPressed.ArrowDown, key => stopFallingWhileKeyDown(key));
-
-useKeyupEvent((event: KeyboardEvent) => {
-  if (event.type === 'keydown') {
-    if (event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowDown' || event.code === 'Space') {
-      tetrisStore.getKeyPressed[event.code] = true;
-      if (appStateEnum[tetrisStore.getAppState] == 'runned' && gameStateEnum[tetrisStore.getGameState] == 'movement') {
-        if (!tetrisStore.getKeyInterval[event.code]) {
-          handleKeyPress(event.code);
-          tetrisStore.getKeyInterval[event.code] = setInterval(() => 
-            event.code !== "Space" ? handleKeyPress(event.code) : {}, 
-            (event.code === "ArrowLeft" || event.code === "ArrowRight") ? tetrisStore.getSideSpeed : tetrisStore.getMovementSpeed
-          );
-        }
-      }
-    } else {
-      if (event.code === 'Enter') {
-        tetrisStore.goToNextAppState();
-      }
-    }
-    
-  } else if (event.type === 'keyup') {
-    if (event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowDown' || event.code === 'Space') {
-      tetrisStore.getKeyPressed[event.code] = false;
-      if (tetrisStore.getKeyInterval[event.code]) {
-        clearInterval(tetrisStore.getKeyInterval[event.code]!);
-        tetrisStore.getKeyInterval[event.code] = undefined;
-      }
-    }
-  }
-});
-
-function handleKeyPress(key: string) {
-  if (appStateEnum[tetrisStore.getAppState] == 'runned' && gameStateEnum[tetrisStore.getGameState] == 'movement') {
-    switch (key) {
-      case 'ArrowUp':
-        tetrisStore.renderNewFrame([0, -1]);
-        break;
-      case 'ArrowLeft':
-        tetrisStore.renderNewFrame([-1, 0]);
-        break;
-      case 'ArrowRight':
-        tetrisStore.renderNewFrame([1, 0]);
-        break;
-      case 'ArrowDown':
-        tetrisStore.renderNewFrame([0, 1]);
-        break;
-      case 'Space':
-        tetrisStore.updateSpin();
-        tetrisStore.renderNewFrame([0, 0]);
-    }
-  }
-}
-
-function stopFallingWhileKeyDown(keyState: boolean) {
-  if (appStateEnum[tetrisStore.getAppState] == 'runned' && gameStateEnum[tetrisStore.getGameState] == 'movement') {
-    if (keyState === true) {
-      tetrisStore.stopFalling();
-    } else if (keyState === false) {
-      tetrisStore.startFalling(tetrisStore.getFallingSpeed);
-    }
-  }
-}
+[width, height] = useDimensionsChange(tetrisStore);
+useKeyEvents();
 </script>
 
 <template>
