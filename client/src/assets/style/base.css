@@ -85,7 +85,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Отключение выделения текста и стандартного поведения при долгом нажатии */
+/* Disable text highlighting and standard long press behavior */
 body, button {
   -webkit-user-select: none; /* Safari */
   -ms-user-select: none; /* IE 10+ */
@@ -93,7 +93,7 @@ body, button {
   -webkit-touch-callout: none; /* iOS Safari */
 }
 
-/* Отключение двойного нажатия для масштабирования */
+/* Disable double click to zoom */
 body {
-  touch-action: manipulation; /* Отключает двойное нажатие для масштабирования */
+  touch-action: manipulation;
 }
