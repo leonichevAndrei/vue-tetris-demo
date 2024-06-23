@@ -45,6 +45,10 @@
 .menu-item input {
     max-width: 74px;
 }
+.menu-item input[readonly] {
+    color:rgb(150, 150, 150);
+    pointer-events: none;
+}
 .menu-item button {
     width: 403px;
     height: 24px;

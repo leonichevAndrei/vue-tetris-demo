@@ -1,8 +1,9 @@
 <script setup lang='ts'>
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 const props = defineProps(['title', 'range', 'value', 'updateStoreFunc']);
 const inputValue = ref(props.value);
+const isMobile = ref(false);
 
 function checkAndSetInputValue(event: any) {
   const value = event.target.value;
@@ -42,6 +43,10 @@ watch(inputValue, (newInputValue) => {
     props.updateStoreFunc(parseInt(newInputValue));
   }
 })
+
+onMounted(() => {
+  isMobile.value = /android|iPad|iPhone|iPod/i.test(navigator.userAgent) && (props.title == 'Width' || props.title == 'Height');
+});
 </script>
 
 <template>
@@ -53,6 +58,7 @@ watch(inputValue, (newInputValue) => {
       @keyup.enter='checkInputOnBlur'
       @focus='checkInputOnFocus'
       @blur='checkInputOnBlur'
+      v-bind:readonly="isMobile"
     />
   </div>
 </template>
