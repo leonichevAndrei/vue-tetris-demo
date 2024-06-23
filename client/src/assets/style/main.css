@@ -1,7 +1,9 @@
 @import './base.css';
 
-div {
-  display: flex;
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
@@ -9,9 +11,16 @@ body {
   place-items: center;
   background-color: rgb(24, 24, 24);
   color: aliceblue;
+  -webkit-overflow-scrolling: touch;
+  overflow: hidden;
+}
+
+div {
+  display: flex;
 }
 
 #app {
+  height: 100%;
   margin: 0 auto;
   padding: 10px;
   font-weight: normal;
