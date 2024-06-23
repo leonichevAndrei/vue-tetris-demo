@@ -18,7 +18,7 @@ export function useKeyEvents() {
           }
         }
       } else {
-        if (event.code === 'Enter') {
+        if (event.code === 'Tab') {
           tetrisStore.goToNextAppState();
         }
       }
