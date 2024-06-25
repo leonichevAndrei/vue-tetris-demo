@@ -11,24 +11,27 @@ const heightPixels = computed(() => tetrisStore.getHeightPixelsRef());
 useKeyEvents();
 </script>
 
-<template v-if="showArea">
+<template>
   <div class="sub-field" :style="{ width: widthPixels.value + 'px', height: heightPixels.value + 'px'}">
     <div class="sub-field-in">
       <div class="top">
         <div :class="['arrow-left', {'show-left-area': showArea}]">
-          <button 
+          <button
+            class="animated-button" 
             @touchstart.prevent="triggerKeyDownEvent('ArrowLeft')" 
             @touchend.prevent="triggerKeyUpEvent('ArrowLeft')"
             ><span v-if="showArea">Tap or hold<br />area to move<br /><span>LEFT</span></span></button>
         </div>
         <div :class="['space', {'show-space-area': showArea}]">
           <button 
+            class="animated-button" 
             @touchstart.prevent="triggerKeyDownEvent('Space')" 
             @touchend.prevent="triggerKeyUpEvent('Space')"
           ><span v-if="showArea">Tap area to<br /><span>ROTATE</span></span></button>
         </div>
         <div :class="['arrow-right', {'show-right-area': showArea}]">
           <button 
+            class="animated-button" 
             @touchstart.prevent="triggerKeyDownEvent('ArrowRight')" 
             @touchend.prevent="triggerKeyUpEvent('ArrowRight')"
           ><span v-if="showArea">Tap or hold<br />area to move<br /><span>RIGHT</span></span></button>
@@ -36,6 +39,7 @@ useKeyEvents();
       </div>
       <div :class="['arrow-down', {'show-down-area': showArea}]">
         <button 
+          class="animated-button" 
           @touchstart.prevent="triggerKeyDownEvent('ArrowDown')" 
           @touchend.prevent="triggerKeyUpEvent('ArrowDown')"
         ><span v-if="showArea">Tap or hold<br />area to move<br /><span>DOWN</span></span></button>

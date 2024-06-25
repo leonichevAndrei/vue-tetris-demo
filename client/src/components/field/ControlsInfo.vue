@@ -13,7 +13,7 @@ const heightPixels = computed(() => tetrisStore.getHeightPixelsRef());
 
 <template>
   <div v-if="showInfo" class="sub-field" :style="{ width: widthPixels.value + 'px', height: heightPixels.value + 'px'}">
-    <div :class="['sub-field-in', {'show-info': showInfo}]">
+    <div class="sub-field-in show-info">
       <p><span class="awesome"><FontAwesomeIcon :icon="faKeyboard" style="font-size: 22px; position: relative; top: 3px; left: -2px;" /></span>&nbsp;&nbsp;Use the <span class='bold'>KEYBOARD</span> to play the game</p>
       <p><span class="key"><span class="key-in">↓</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Press the <span class='bold'>DOWN ARROW</span> to move down</p>
       <p><span class="key"><span class="key-in">←</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Press the <span class='bold'>LEFT ARROW</span> to move left</p>
