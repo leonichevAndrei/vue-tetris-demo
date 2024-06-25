@@ -37,11 +37,11 @@
 .game-over p.title {
   font-size: 22px;
 }
-.touch-controls {
+.sub-field {
   position: absolute;
   z-index: 0;
 }
-.touch-controls-in {
+.sub-field-in {
   width: 100%;
   height: 100%;
   /*border: 1px solid red;*/
@@ -51,35 +51,87 @@
   border-radius: 6px;
   flex-direction: column;
 }
-.touch-controls-in .top {
+.sub-field-in .top {
   width: 100%;
   height: 80%;
 }
-.touch-controls-in .top .arrowLeft {
+.sub-field-in .top .arrow-left {
   width: 35%;
   height: 100%;
 }
-.touch-controls-in .top .space {
+.sub-field-in .top .space {
+  width: 30%;
+  height: 100%;
+}
+.sub-field-in .top .arrow-right {
   width: 35%;
   height: 100%;
 }
-.touch-controls-in .top .arrowRight {
-  width: 35%;
-  height: 100%;
-}
-.touch-controls-in .arrowDown {
+.sub-field-in .arrow-down {
   width: 100%;
   height: 20%;
 }
-.touch-controls-in button {
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+@keyframes fontSizeAnimation {
+  0%, 100% {
+    font-size: 12px;
+  }
+  50% {
+    font-size: 16px;
+  }
+}
+.sub-field-in .show-left-area {
+  background: linear-gradient(45deg, rgba(255, 230, 0, 1), rgba(255, 87, 34, 0.9)); /* Yellow to Orange */
+  /* background-size: 200% 200%;
+  animation: gradientAnimation 5s ease infinite; */
+  /* border: 1px solid rgba(255, 230, 0, 1);
+  border-bottom: none; */
+}
+.sub-field-in .show-space-area {
+  background: linear-gradient(45deg, rgba(3, 200, 255, 1), rgba(230, 39, 255, 0.9)); /* Light Blue to Magenta */
+  /* background-size: 200% 200%;
+  animation: gradientAnimation 5s ease infinite; */
+  /* border-top: 1px solid rgba(255, 178, 255, 1); */
+}
+.sub-field-in .show-right-area {
+  background: linear-gradient(45deg, rgba(255, 79, 220, 1), rgba(255, 22, 127, 0.9)); /* Light Pink to Purple */
+  /* background-size: 200% 200%;
+  animation: gradientAnimation 5s ease infinite; */
+  /* border: 1px solid rgba(255, 178, 255, 1);
+  border-bottom: none; */
+}
+.sub-field-in .show-down-area {
+  background: linear-gradient(45deg, rgba(33, 150, 243, 1), rgba(44, 76, 255, 0.9)); /* Blue to Light Blue */
+  /* background-size: 200% 200%;
+  animation: gradientAnimation 5s ease infinite; */
+  /* border: 1px solid rgba(3, 242, 255, 1); */
+}
+.sub-field-in button {
   width: 100%;
   height: 100%;
   background: none;
   border: none;
+  color: white;
+  font-weight: bold;
+  /* font-size: 14px; */
+  animation: fontSizeAnimation 2s ease infinite;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0); /* Disables the highlight effect on iOS */
 }
+.sub-field-in button span span {
+  font-weight: bold;
+}
 /* Additional styles to remove standard click effects */
-.touch-controls-in button:active, .touch-controls-in button:focus {
+.sub-field-in button:active, .sub-field-in button:focus {
   outline: none;
   box-shadow: none;
 }

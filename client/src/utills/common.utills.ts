@@ -14,3 +14,7 @@ export function calculateScorePoints(linesWasCleared: number, speedLevel: number
 export function calculateFallingSpeed(speedLevel: number, speedIncreaseFactor: number) {
   return Math.floor((48 - (speedIncreaseFactor * speedLevel)) / 60 * 1000);
 }
+export function isMobileDevice() {
+  const userAgent = navigator.userAgent;
+  return /android|iPad|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+}

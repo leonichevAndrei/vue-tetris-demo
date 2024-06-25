@@ -1,5 +1,6 @@
 <script setup lang='ts'>
-import Column from './Column.vue'
+import Column from './Column.vue';
+import ControlsInfo from './ControlsInfo.vue';
 import GameOver from './GameOver.vue';
 import { appStateEnum } from '@/config/tetris.enums';
 import { useTetrisStore } from '@/stores/tetris';
