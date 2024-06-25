@@ -18,7 +18,7 @@ export function useKeyEvents() {
           }
         }
       } else {
-        if (event.code === 'Tab') {
+        if (event.code === 'ShiftLeft' || event.code == 'ShiftRight') {
           tetrisStore.goToNextAppState();
         }
       }
@@ -60,7 +60,6 @@ export function useKeyEvents() {
           tetrisStore.renderNewFrame([0, 1]);
           break;
         case 'Space':
-          console.log('space.....!!!!')
           tetrisStore.updateSpin();
           tetrisStore.renderNewFrame([0, 0]);
       }

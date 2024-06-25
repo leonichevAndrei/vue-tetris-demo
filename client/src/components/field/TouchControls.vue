@@ -11,7 +11,7 @@ const heightPixels = computed(() => tetrisStore.getHeightPixelsRef());
 useKeyEvents();
 </script>
 
-<template>
+<template v-if="showArea">
   <div class="sub-field" :style="{ width: widthPixels.value + 'px', height: heightPixels.value + 'px'}">
     <div class="sub-field-in">
       <div class="top">
