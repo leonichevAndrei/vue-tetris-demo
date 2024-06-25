@@ -1,8 +1,8 @@
 <script setup lang='ts'>
 import { computed } from 'vue';
 import { triggerKeyUpEvent, triggerKeyDownEvent, useKeyEvents } from '@/utills/key.events.utills';
-import { useTetrisStore } from '@/stores/tetris';
 import { appStateEnum } from '@/config/tetris.enums';
+import { useTetrisStore } from '@/stores/tetris';
 const tetrisStore = useTetrisStore();
 
 const showArea = computed(() => tetrisStore.getAppState == appStateEnum['init']);
