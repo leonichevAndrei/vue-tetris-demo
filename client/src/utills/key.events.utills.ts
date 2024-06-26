@@ -18,7 +18,7 @@ export function useKeyEvents() {
           }
         }
       } else {
-        if (event.code === 'ShiftLeft' || event.code == 'ShiftRight') {
+        if (event.code === 'ControlLeft' || event.code == 'ControlRight') {
           tetrisStore.goToNextAppState();
         }
       }
@@ -78,11 +78,10 @@ export function useKeyEvents() {
 
 export function triggerKeyDownEvent(key: string) {
   const keydownEvent = new KeyboardEvent('keydown', { key, code: key, bubbles: true, cancelable: true });
-  const keydownResult = document.dispatchEvent(keydownEvent);
-
+  return document.dispatchEvent(keydownEvent);
 }
 
 export function triggerKeyUpEvent(key: string) {
   const keyupEvent = new KeyboardEvent('keyup', { key, code: key, bubbles: true, cancelable: true });
-  const keyupResult = document.dispatchEvent(keyupEvent);
+  return document.dispatchEvent(keyupEvent);
 }

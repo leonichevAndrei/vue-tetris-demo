@@ -14,12 +14,12 @@ const heightPixels = computed(() => tetrisStore.getHeightPixelsRef());
 <template>
   <div v-if="showInfo" class="sub-field" :style="{ width: widthPixels.value + 'px', height: heightPixels.value + 'px'}">
     <div class="sub-field-in show-info">
-      <p><span class="awesome"><FontAwesomeIcon :icon="faKeyboard" style="font-size: 22px; position: relative; top: 3px; left: -2px;" /></span>&nbsp;&nbsp;Use the <span class='bold'>KEYBOARD</span> to play the game</p>
-      <p><span class="key"><span class="key-in">↓</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Press the <span class='bold'>DOWN ARROW</span> to move down</p>
-      <p><span class="key"><span class="key-in">←</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Press the <span class='bold'>LEFT ARROW</span> to move left</p>
-      <p><span class="key"><span class="key-in">→</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Press the <span class='bold'>RIGHT ARROW</span> to move right</p>
-      <p><span class="key"><span class="key-in">␣</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Press <span class='bold'>SPACE</span> to rotate an element</p>
-      <p><span class="key"><span class="key-in">⇧</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Press <span class='bold'>SHIFT</span> to start or end the game</p>
+      <div><span class="awesome"><FontAwesomeIcon :icon="faKeyboard" style="font-size: 22px; position: relative; top: 3px; left: -2px;" /></span>&nbsp;&nbsp;Use the &nbsp;<span class='bold'>KEYBOARD</span>&nbsp; to play the game</div>
+      <div><span class="key"><span class="key-in symbol">↓</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Press the <span class='bold'>&nbsp;DOWN ARROW&nbsp;</span> to move down</div>
+      <div><span class="key"><span class="key-in symbol">←</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Press the <span class='bold'>&nbsp;LEFT ARROW&nbsp;</span> to move left</div>
+      <div><span class="key"><span class="key-in symbol">→</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Press the <span class='bold'>&nbsp;RIGHT ARROW&nbsp;</span> to move right</div>
+      <div><span class="key"><span class="key-in symbol-space">␣</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Press <span class='bold'>&nbsp;SPACE&nbsp;</span> to rotate an element</div>
+      <div><span class="key"><span class="key-in text">Ctrl</span></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Press <span class='bold'>&nbsp;CONTROL&nbsp;</span> to start or end the game</div>
     </div>
   </div>
 </template>
