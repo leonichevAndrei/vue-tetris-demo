@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, type Ref } from 'vue';
+import { computed, ref, onMounted, type Ref, watch } from 'vue';
 import { useTetrisStore } from '@/stores/tetris';
 import axios from 'axios';
+import { addToLeaderboard } from '@/utills/tetris.store.utills';
 const tetrisStore = useTetrisStore();
 
 const name = ref('');
-const newRecord = ref(false);
+const newHighScore = ref(false);
+const recordSubmitted = ref(false);
 const apiData: Ref<{ data: { name: string; points: number }[] }> = ref({
   data: [],
 });
@@ -20,17 +22,16 @@ async function getData() {
     console.error('Error fetching data:', error);
   }
 }
-
-async function updateData() {
+async function updateData(newData: {
+  data: { name: string; points: number }[];
+}) {
   try {
-    const newData = { key: 'value' }; // Your update data
     const response = await axios.post('/api/handleData', newData);
     console.log('Update response:', response.data);
   } catch (error) {
     console.error('Error updating data:', error);
   }
 }
-
 function checkName() {
   if (name.value.length > 20) {
     name.value = name.value.substring(0, 20);
@@ -40,8 +41,29 @@ function checkName() {
     name.value = name.value.substring(0, name.value.length - 1);
   }
 }
-
-onMounted(() => getData());
+function submitRecord() {
+  if (name.value.length >= 3) {
+    apiData.value = addToLeaderboard(
+      apiData.value.data,
+      name.value,
+      tetrisStore.getScore
+    );
+    updateData(apiData.value);
+    recordSubmitted.value = true;
+  }
+}
+onMounted(async () => {
+  await getData();
+  if (
+    apiData.value.data.length > 0 &&
+    apiData.value.data[9].points < tetrisStore.getScore
+  ) {
+    newHighScore.value = true;
+  }
+});
+watch(apiData, () => {
+  console.log('apiData updated');
+});
 </script>
 
 <template>
@@ -54,16 +76,20 @@ onMounted(() => getData());
     }"
   >
     <div class="sub-field-in game-over">
-      <div class="title">GAME OVER</div>
-      <div class="score">
+      <div v-if="!recordSubmitted" class="title">GAME OVER</div>
+      <div v-if="!recordSubmitted" class="score">
         Final score:&nbsp;<span>{{ tetrisStore.getScore }}</span>
       </div>
-      <div class="record">IT'S A NEW RECORD!</div>
-      <div class="enter-name">Please, enter your name:</div>
-      <div class="for-input">
-        <input v-model="name" @input="checkName" type="text" />&nbsp;<button>
-          Send
-        </button>
+      <div v-if="newHighScore && !recordSubmitted" class="record">
+        IT'S A NEW RECORD!
+      </div>
+      <div v-if="recordSubmitted" class="score-added">SCORE SAVED!</div>
+      <div v-if="newHighScore && !recordSubmitted" class="enter-name">
+        Please, enter your name (3-20 letters):
+      </div>
+      <div v-if="newHighScore && !recordSubmitted" class="for-input">
+        <input v-model="name" @input="checkName" type="text" />&nbsp;
+        <button @click="submitRecord">Send</button>
       </div>
       <div class="leaderboard">LEADERBOARD:</div>
       <div class="list">

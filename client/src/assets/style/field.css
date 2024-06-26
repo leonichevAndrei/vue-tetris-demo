@@ -369,6 +369,15 @@
   font-size: 18px;
   line-height: 18px;
   color: rgb(51, 208, 208);
+  font-weight: bold;
+}
+
+.game-over div.score-added {
+  font-size: 28px;
+  line-height: 18px;
+  color: rgb(51, 208, 208);
+  padding-top: 14px;
+  font-weight: bold;
 }
 
 .game-over div.enter-name {
