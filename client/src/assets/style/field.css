@@ -282,7 +282,7 @@
   /* border: 1px solid white; */
 }
 .game-over p.list tr td.number {
-  text-align: right;
+  text-align: left;
   color:rgb(51, 208, 208);
 }
 .game-over p.list tr td.name {
