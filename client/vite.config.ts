@@ -19,5 +19,9 @@ export default defineConfig({
         // rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
+  },
+  build: {
+    outDir: 'dist', // Обратите внимание, что dist теперь в корне
+    emptyOutDir: true, // Очистка выходной директории перед сборкой
   }
 });
