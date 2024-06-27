@@ -3,6 +3,8 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import lockFile from 'lockfile';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Getting the path to the current directory:
 const __filename = fileURLToPath(import.meta.url);
@@ -122,5 +124,5 @@ const requestListener = (req, res) => {
 };
 
 const server = http.createServer(requestListener);
-const port = process.env.PORT || 3000;
+const port = process.env.VITE_API_PORT;
 server.listen(port, () => console.log(`Server is running on port ${port}`));

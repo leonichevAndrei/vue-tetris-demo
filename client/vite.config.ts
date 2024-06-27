@@ -1,11 +1,15 @@
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { fileURLToPath, URL } from 'url';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+console.log('VITE_API_URL:', process.env.VITE_API_URL);
+console.log('VITE_API_PORT:', process.env.VITE_API_PORT);
 
 export default defineConfig({
-  plugins: [
-    vue(),
-  ],
+  plugins: [vue()],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))
@@ -14,14 +18,14 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3000',
+        target: `${process.env.VITE_API_URL}:${process.env.VITE_API_PORT}`,
         changeOrigin: true,
         // rewrite: (path) => path.replace(/^\/api/, '')
       }
     }
   },
   build: {
-    outDir: 'dist', // Обратите внимание, что dist теперь в корне
-    emptyOutDir: true, // Очистка выходной директории перед сборкой
+    outDir: 'dist',
+    emptyOutDir: true,
   }
 });
