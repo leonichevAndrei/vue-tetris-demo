@@ -18,7 +18,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Serve static files from the dist directory:
+// Serve the static files from the Vue app
 app.use(express.static(path.join(__dirname, '../dist')));
 
 // API endpoint:
@@ -83,7 +83,7 @@ app.get('/api/handleData', (req, res) => {
 
 // Fallback to index.html for other requests:
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../dist', 'index.html'));
+  res.sendFile(path.join(__dirname, '../dist/index.html'));
 });
 
 app.listen(port, () => {
