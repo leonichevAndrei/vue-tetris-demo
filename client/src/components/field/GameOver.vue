@@ -16,7 +16,7 @@ const heightPixels = computed(() => tetrisStore.getHeightPixelsRef());
 
 async function getData() {
   try {
-    const response = await axios.get('/api/handleData');
+    const response = await axios.get('http://localhost:3001/api/handleData');
     apiData.value = response.data;
   } catch (error) {
     console.error('Error fetching data:', error);
@@ -26,7 +26,7 @@ async function updateData(newData: {
   data: { name: string; points: number }[];
 }) {
   try {
-    const response = await axios.post('/api/handleData', newData);
+    const response = await axios.post('http://localhost:3001/api/handleData', newData);
     console.log('Update response:', response.data);
   } catch (error) {
     console.error('Error updating data:', error);

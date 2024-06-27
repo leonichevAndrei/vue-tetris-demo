@@ -18,14 +18,13 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: `${process.env.VITE_API_URL}:${process.env.VITE_API_PORT}`,
-        changeOrigin: true,
-        // rewrite: (path) => path.replace(/^\/api/, '')
+        target: "http://localhost:3001",
+        changeOrigin: true
       }
     }
   },
   build: {
     outDir: 'dist',
-    emptyOutDir: true,
+    emptyOutDir: true
   }
 });
