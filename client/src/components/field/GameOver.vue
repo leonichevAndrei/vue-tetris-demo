@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, ref, onMounted, type Ref, watch } from 'vue';
+import { computed, ref, onMounted, type Ref } from 'vue';
 import { useTetrisStore } from '@/stores/tetris';
 import axios from 'axios';
 import { addToLeaderboard } from '@/utills/tetris.store.utills';
+
 const tetrisStore = useTetrisStore();
 
 const name = ref('');
@@ -16,22 +17,30 @@ const heightPixels = computed(() => tetrisStore.getHeightPixelsRef());
 
 async function getData() {
   try {
-    const response = await axios.get('http://localhost:3001/api/handleData');
-    apiData.value = response.data;
+    const response = await axios.get('/api/handleData');
+    if (response.data && response.data.data) {
+      apiData.value = response.data;
+    } else {
+      console.error('No data in response:', response);
+      apiData.value = { data: [] };
+    }
   } catch (error) {
     console.error('Error fetching data:', error);
+    apiData.value = { data: [] };
   }
 }
+
 async function updateData(newData: {
   data: { name: string; points: number }[];
 }) {
   try {
-    const response = await axios.post('http://localhost:3001/api/handleData', newData);
+    const response = await axios.post('/api/handleData', newData);
     console.log('Update response:', response.data);
   } catch (error) {
     console.error('Error updating data:', error);
   }
 }
+
 function checkName() {
   if (name.value.length > 20) {
     name.value = name.value.substring(0, 20);
@@ -41,6 +50,7 @@ function checkName() {
     name.value = name.value.substring(0, name.value.length - 1);
   }
 }
+
 function submitRecord() {
   if (name.value.length >= 3) {
     apiData.value = addToLeaderboard(
@@ -52,17 +62,19 @@ function submitRecord() {
     recordSubmitted.value = true;
   }
 }
+
 onMounted(async () => {
-  await getData();
-  if (
-    apiData.value.data.length > 0 &&
-    apiData.value.data[9].points < tetrisStore.getScore
-  ) {
-    newHighScore.value = true;
+  try {
+    await getData();
+    if (
+      apiData.value.data.length > 0 &&
+      apiData.value.data[9]?.points < tetrisStore.getScore
+    ) {
+      newHighScore.value = true;
+    }
+  } catch (error) {
+    console.error('Error in onMounted:', error);
   }
-});
-watch(apiData, () => {
-  console.log('apiData updated');
 });
 </script>
 

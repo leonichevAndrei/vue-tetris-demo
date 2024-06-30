@@ -4,6 +4,19 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,vue,json,css,scss,md}\""
+
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.19.2",
+    "firebase": "^10.12.2",
+    "firebase-admin": "^12.2.0",
+    "lockfile": "^1.0.4"
+  },
+  "devDependencies": {
+    "prettier": "^3.3.2",
+    "prettier-plugin-vue": "^1.1.6"
   }
 }

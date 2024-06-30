@@ -7,12 +7,14 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "serve:dist": "serve -s dist",
+    "serve": "serve -s dist -l 3500",
     "http-server:dist": "http-server dist",
     "build-only": "vite build",
     "type-check": "vue-tsc --build --force",
     "start-server": "node api/server.js",
-    "start": "npm-run-all2 --parallel start-server dev"
+    "start": "npm-run-all2 --parallel start-server dev",
+    "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,vue,json,css,scss,md}\""
+
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.2",

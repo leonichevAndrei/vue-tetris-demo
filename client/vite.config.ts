@@ -7,18 +7,18 @@ export default defineConfig({
   build: {
     outDir: 'dist',
   },
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    }
-  },
   server: {
     proxy: {
       '/api': {
-        target: 'http://localhost:3001',
+        target: 'http://localhost:3000',
         changeOrigin: true,
-        // rewrite: (path) => path.replace(/^\/api/, '/api')
+        rewrite: (path) => path.replace(/^\/api/, '/api')
       }
+    }
+  },
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   }
 });
