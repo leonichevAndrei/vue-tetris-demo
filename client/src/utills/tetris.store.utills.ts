@@ -229,7 +229,9 @@ export function combineStaticMatrixPartsInOne(data: {
   const matrix = data.staticMatrix;
   const length = data.staticMatrix[0].length;
   const addedPart = new Array(lines.length).fill(new Array(length).fill(0));
-  matrix.splice(lines[0], lines.length);
+  for (let i = lines.length - 1; i >= 0; i--) {
+    matrix.splice(lines[i], 1);
+  }
   matrix.unshift(...addedPart);
   return matrix;
 }
