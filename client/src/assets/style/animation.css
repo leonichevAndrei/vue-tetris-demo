@@ -1,0 +1,35 @@
+@keyframes gradientAnimation {
+  0%   { background-position: 0% 35%; }
+  11%  { background-position: 35% 0%; }
+  22%  { background-position: 65% 0%; }
+  33%  { background-position: 100% 35%; }
+  44%  { background-position: 100% 65%; }
+  55%  { background-position: 100% 65%; }
+  66%  { background-position: 65% 100%; }
+  77%  { background-position: 35% 100%; }
+  88%  { background-position: 0% 65%; }
+  100% { background-position: 0% 35%; }
+}
+
+@keyframes fontSizeAnimation {
+  0%, 100% { font-size: 12px; }
+  50%      { font-size: 14px; }
+}
+
+@keyframes relativePositionAnimation {
+  0%   { width: 22px; height: 16px; border-radius: var(--border-radius-small); line-height: 14px; font-size: 9px; left: 0; top: 5px; }
+  50%  { width: 28px; height: 20px; border-radius: var(--border-radius-medium); line-height: 19px; font-size: 13px; left: -3px; top: 3px; }
+  100% { width: 22px; height: 16px; border-radius: var(--border-radius-small); line-height: 14px; font-size: 9px; left: 0; top: 5px; }
+}
+
+@keyframes relativePositionAnimationSpace {
+  0%   { width: 22px; height: 16px; border-radius: var(--border-radius-small); line-height: 5px; font-size: 11px; left: 0; top: 5px; }
+  50%  { width: 28px; height: 20px; border-radius: var(--border-radius-medium); line-height: 6px; font-size: 16px; left: -3px; top: 3px; }
+  100% { width: 22px; height: 16px; border-radius: var(--border-radius-small); line-height: 5px; font-size: 11px; left: 0; top: 5px; }
+}
+
+@keyframes relativePositionAnimationText {
+  0%   { width: 22px; height: 16px; border-radius: var(--border-radius-small); line-height: 14px; font-size: 5px; left: 0; top: 5px; }
+  50%  { width: 28px; height: 20px; border-radius: var(--border-radius-medium); line-height: 19px; font-size: 8px; left: -3px; top: 3px; }
+  100% { width: 22px; height: 16px; border-radius: var(--border-radius-small); line-height: 14px; font-size: 5px; left: 0; top: 5px; }
+}

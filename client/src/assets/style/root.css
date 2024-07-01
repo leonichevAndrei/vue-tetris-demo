@@ -1,0 +1,12 @@
+:root {
+  --color-text: aliceblue;
+  --color-text-light: white;
+  --color-primary: rgb(13, 115, 115);
+  --color-secondary: rgb(51, 208, 208);
+  --color-background-dark: rgb(24, 24, 24);
+  --color-background-light: rgba(24, 24, 24, 0.5);
+  --color-tertiary: rgb(150, 150, 150);
+  --border-radius-small: 2px;
+  --border-radius-medium: 3px;
+  --border-radius-large: 6px;
+}
