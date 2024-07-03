@@ -18,3 +18,8 @@ export function isMobileDevice() {
   const userAgent = navigator.userAgent;
   return /android|iPad|iPhone|iPod|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
 }
+export function isTouchDevice() {
+  return 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+}
+
+

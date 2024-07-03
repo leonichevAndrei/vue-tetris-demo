@@ -1,4 +1,4 @@
-@media (max-width: 420px) {
+@media (max-width: 420px), (max-height: 740px) {
   .menu-item button {
     width: 378px;
   }
@@ -24,7 +24,7 @@
   }
 }
 
-@media (max-width: 395px) {
+@media (max-width: 395px), (max-height: 710px) {
   .menu-item button {
     width: 360px;
   }
@@ -50,7 +50,7 @@
   }
 }
 
-@media (max-width: 380px) {
+@media (max-width: 380px), (max-height: 680px) {
   .menu-item button {
     width: 342px;
   }
@@ -76,7 +76,7 @@
   }
 } 
 
-@media (max-width: 365px) {
+@media (max-width: 365px), (max-height: 650px) {
   .menu-item button {
     width: 324px;
   }
@@ -102,33 +102,7 @@
   }
 }
 
-@media (max-width: 350px) {
-  .menu-item button {
-    width: 306px;
-  }
-  .control-panel .line .elements-block {
-    width: 306px;
-  }
-  .element {
-    width: 11px;
-    height: 11px;
-  }
-  .sub-field { 
-    width: 314px !important;
-    height: 484px !important;
-  }
-  .sub-field-in {
-    top: 68px;
-  }
-  .menu-item input {
-    max-width: 43px;
-  }
-  .elements-block div p {
-    display: none;
-  }
-}
-
-@media (max-height: 700px) {
+@media (max-width: 350px), (max-height: 620px) {
   .menu-item button {
     width: 306px;
   }

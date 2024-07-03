@@ -8,7 +8,7 @@ import GameOver from '@/components/field/GameOver.vue';
 import { appStateEnum } from '@/config/tetris.enums';
 import { useKeyEvents } from '@/utills/key.events.utills';
 import { useDimensionsChange } from '@/utills/hooks.utills';
-import { isMobileDevice } from '@/utills/common.utills';
+import { isTouchDevice } from '@/utills/common.utills';
 import { useTetrisStore } from '@/stores/tetris';
 const tetrisStore = useTetrisStore();
 let width: Ref<number>;
@@ -23,8 +23,8 @@ useKeyEvents();
   <div class='main-view' :id="templateIdForUpdate">
     <ControlPanel />
     <Field :width="width" :height="height" />
-    <TouchControls v-if="isMobileDevice()" />
-    <ControlsInfo v-if="!isMobileDevice()" />
+    <TouchControls v-if="isTouchDevice()" />
+    <ControlsInfo v-if="!isTouchDevice()" />
     <GameOver v-if="appStateEnum[tetrisStore.getAppState]=='finished'" />
   </div>
 </template>
