@@ -1,0 +1,155 @@
+@media (max-width: 420px) {
+  .menu-item button {
+    width: 378px;
+  }
+  .control-panel .line .elements-block {
+    width: 378px;
+  }
+  .element {
+    width: 15px;
+    height: 15px;
+  }
+  .sub-field { 
+    width: 386px !important;
+    height: 596px !important;
+  }
+  .sub-field-in {
+    top: 68px;
+  }
+  .menu-item input {
+    max-width: 65px;
+  }
+  .elements-block div p {
+    display: none;
+  }
+}
+
+@media (max-width: 395px) {
+  .menu-item button {
+    width: 360px;
+  }
+  .control-panel .line .elements-block {
+    width: 360px;
+  }
+  .element {
+    width: 14px;
+    height: 14px;
+  }
+  .sub-field { 
+    width: 368px !important;
+    height: 568px !important;
+  }
+  .sub-field-in {
+    top: 68px;
+  }
+  .menu-item input {
+    max-width: 60px;
+  }
+  .elements-block div p {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  .menu-item button {
+    width: 342px;
+  }
+  .control-panel .line .elements-block {
+    width: 342px;
+  }
+  .element {
+    width: 13px;
+    height: 13px;
+  }
+  .sub-field { 
+    width: 350px !important;
+    height: 540px !important;
+  }
+  .sub-field-in {
+    top: 68px;
+  }
+  .menu-item input {
+    max-width: 55px;
+  }
+  .elements-block div p {
+    display: none;
+  }
+} 
+
+@media (max-width: 365px) {
+  .menu-item button {
+    width: 324px;
+  }
+  .control-panel .line .elements-block {
+    width: 324px;
+  }
+  .element {
+    width: 12px;
+    height: 12px;
+  }
+  .sub-field { 
+    width: 332px !important;
+    height: 512px !important;
+  }
+  .sub-field-in {
+    top: 68px;
+  }
+  .menu-item input {
+    max-width: 50px;
+  }
+  .elements-block div p {
+    display: none;
+  }
+}
+
+@media (max-width: 350px) {
+  .menu-item button {
+    width: 306px;
+  }
+  .control-panel .line .elements-block {
+    width: 306px;
+  }
+  .element {
+    width: 11px;
+    height: 11px;
+  }
+  .sub-field { 
+    width: 314px !important;
+    height: 484px !important;
+  }
+  .sub-field-in {
+    top: 68px;
+  }
+  .menu-item input {
+    max-width: 43px;
+  }
+  .elements-block div p {
+    display: none;
+  }
+}
+
+@media (max-height: 700px) {
+  .menu-item button {
+    width: 306px;
+  }
+  .control-panel .line .elements-block {
+    width: 306px;
+  }
+  .element {
+    width: 11px;
+    height: 11px;
+  }
+  .sub-field { 
+    width: 314px !important;
+    height: 484px !important;
+  }
+  .sub-field-in {
+    top: 68px;
+  }
+  .menu-item input {
+    max-width: 43px;
+  }
+  .elements-block div p {
+    display: none;
+  }
+}

@@ -8,7 +8,3 @@ const props = defineProps(['width', 'height']);
     <Column :x="index - 1" v-for="index in props.height" :width="props.width" />
   </div>
 </template>
-
-<style>
-@import '../../assets/style/field.css';
-</style>

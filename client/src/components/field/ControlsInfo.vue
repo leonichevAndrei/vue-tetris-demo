@@ -23,7 +23,3 @@ const heightPixels = computed(() => tetrisStore.getHeightPixelsRef());
     </div>
   </div>
 </template>
-
-<style>
-@import '../../assets/style/field.css';
-</style>

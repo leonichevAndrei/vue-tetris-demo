@@ -116,7 +116,3 @@ onMounted(async () => {
     </div>
   </div>
 </template>
-
-<style>
-@import '../../assets/style/field.css';
-</style>

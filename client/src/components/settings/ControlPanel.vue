@@ -31,7 +31,3 @@ const tetrisStore = useTetrisStore();
     </div>
   </div>
 </template>
-
-<style>
-@import '../../assets/style/control-panel.css';
-</style>

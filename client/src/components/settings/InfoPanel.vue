@@ -17,7 +17,3 @@ const imgSrc = computed(() => '/images/' + conf.elementsIcons[tetrisStore.getNex
     </div>
   </div>
 </template>
-
-<style>
-@import '../../assets/style/control-panel.css';
-</style>

@@ -29,5 +29,8 @@ useKeyEvents();
   </div>
 </template>
 
-<style scoped>
+<style>
+@import '../assets/style/control-panel.css';
+@import '../assets/style/field.css';
+@import '../assets/style/media.css';
 </style>
