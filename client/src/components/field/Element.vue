@@ -15,6 +15,5 @@ const elmStatus = computed(() => {
 </script>
 
 <template>
-  <div :class='["element", elmStatus]'>
-  </div>
+  <div :class='["element", elmStatus]' />
 </template>

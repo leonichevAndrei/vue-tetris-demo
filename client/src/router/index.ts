@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from 'vue-router';
-// @ts-ignore
 import MainView from '../views/MainView.vue';
 
 const router = createRouter({

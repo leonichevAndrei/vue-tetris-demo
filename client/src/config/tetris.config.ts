@@ -26,6 +26,6 @@ export default {
   speedIncreaseFactor: 1.60, // Only in the range of 0.01 - 1.62!
   linesScore: [ 40, 100, 300, 1200 ],
   movementSpeed: 50, // optimal - 50
-  sideSpeed: 75, // optimal - 75
-  cleaningSpeed: 25 // optimal - 25
+  sideSpeed:     75, // optimal - 75
+  cleaningSpeed: 25  // optimal - 25
 }

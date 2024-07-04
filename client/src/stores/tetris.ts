@@ -6,6 +6,7 @@ import { generateFieldTypes } from "@/config/tetris.enums";
 import { calculateFallingSpeed, calculateScorePoints, getRandomElementId } from "@/utills/common.utills";
 import allElements from '@/assets/elements/all-elms';
 import conf from '@/config/tetris.config.ts';
+import { customLogger } from "@/utills/logging.utills";
 
 export const useTetrisStore = defineStore('tetris', () => {
 
@@ -19,7 +20,6 @@ export const useTetrisStore = defineStore('tetris', () => {
   const score = ref(0);
   const frames = ref(-1);
   const fieldMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['filled']));
-  // const staticMatrix = ref(getPresetMatrix());
   const staticMatrix = ref(generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']));
   const elementId = ref(-1);
   const nextElementId = ref(getRandomElementId(allElements.length, elementId.value));
@@ -36,29 +36,7 @@ export const useTetrisStore = defineStore('tetris', () => {
   const keyInterval: Ref<{ [key:string]:number|undefined }> = ref({ ArrowUp: undefined, ArrowLeft: undefined, ArrowRight: undefined, ArrowDown: undefined, Space: undefined });
   const cleaningState: Ref<{ byXAxis:number[];byYAxis:number[] }> = ref({ byXAxis:[], byYAxis:[] });
   const linesErasedCounter = ref(0);
-
-  // LOGGING:
-  const startTimestamp = performance.now();
-  function getMSLog() {
-    let difference = (performance.now() - startTimestamp).toString();
-    if (difference.length == 5) {
-      difference += ".000000000000";
-    }
-    return `${difference}: `;
-  }
-  function getAppAndGameStateLog() {
-    return `<App: [${appStateEnum[appState.value]}] & Game: [${gameStateEnum[gameState.value]}]> ->`;
-  }
-  function addFrames() {
-    return `Frame<${frames.value}>`;
-  }
-  function myLog(logInfo: string) {
-    // console.log(`
-    //   ${addFrames()} 
-    //   ${getAppAndGameStateLog()} 
-    //   ${logInfo}
-    // `);
-  }
+  const enableLogger = ref(false);
 
   // GETTERS:
   const getWidth = computed(() => width.value);
@@ -84,6 +62,7 @@ export const useTetrisStore = defineStore('tetris', () => {
   const getNextElementId = computed(() => nextElementId.value);
   const getSpeedLevel = computed(() => speedLevel.value);
   const getLinesErasedCounter = computed(() => linesErasedCounter.value);
+  const isEnableLogger = computed(() => enableLogger.value);
 
   // ACTIONS:
   function goToNextAppState() {
@@ -94,72 +73,72 @@ export const useTetrisStore = defineStore('tetris', () => {
     setAppState(nextAppState);
   }
   function startFalling(speed: number) {
-    myLog("startFalling()");
+    customLogger("startFalling()");
     stopFalling();
     if (appStateEnum[appState.value] == 'runned') {
       intervalIdFalling.value = setInterval(() => {
         if (appStateEnum[appState.value] == 'runned') {
-          myLog("startFalling() -> intervalIdFalling is active...");
+          customLogger("startFalling() -> intervalIdFalling is active...");
           renderNewFrame([0,1]);
         }
       }, speed);
     }
   }
   function stopFalling() {
-    myLog("stopFalling()")
+    customLogger("stopFalling()")
     if (intervalIdFalling.value !== undefined) {
       clearInterval(intervalIdFalling.value!);
       intervalIdFalling.value = undefined;
     }
   }
   function startCleaning(speed:number) {
-    myLog("startCleaning()");
+    customLogger("startCleaning()");
     stopCleaning();
     if (appStateEnum[appState.value] == 'runned') {
       intervalIdCleaning.value = setInterval(() => {
         if (appStateEnum[appState.value] == 'runned' && intervalIdFalling.value === undefined) {
-          myLog("startCleaning() -> intervalIdCleaning is active...");
+          customLogger("startCleaning() -> intervalIdCleaning is active...");
           renderNewCleaningFrame();
         }
       }, speed);
     }
   }
   function stopCleaning() {
-    myLog("stopCleaning()");
+    customLogger("stopCleaning()");
     if (intervalIdCleaning.value !== undefined) {
       clearInterval(intervalIdCleaning.value!);
       intervalIdCleaning.value = undefined;
     }
   }
   function setWidth(newWidth: number) {
-    myLog("setWidth()");
+    customLogger("setWidth()");
     width.value = newWidth;
     widthPixels.value = calculateSizePixels(newWidth);
     staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']);
-    myLog('setWidth from ' + width.value + " to " + newWidth);
+    customLogger('setWidth from ' + width.value + " to " + newWidth);
   }
   function setHeight(newHeight: number) {
-    myLog("setHeight()");
+    customLogger("setHeight()");
     height.value = newHeight;
     heightPixels.value = calculateSizePixels(newHeight);
     staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes['empty']);
-    myLog('setHeight from ' + height.value + " to " + newHeight);
+    customLogger('setHeight from ' + height.value + " to " + newHeight);
   }
   function setAppState(newState: appStateEnum) {
-    myLog("PREPARE TO set App state to: " + appStateEnum[newState] + "...");
+    customLogger("PREPARE TO set App state to: " + appStateEnum[newState] + "...");
     if (appStateEnum[newState] == 'init') {
-      myLog("setAppState -> init");
+      customLogger("setAppState -> init");
       appState.value = newState;
       fieldMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes.filled);
       staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes.empty);
       resetFrames();
       resetGameScore();
     } else if (appStateEnum[newState] == 'runned') {
-      myLog("setAppState -> runned");
+      customLogger("setAppState -> runned");
       appState.value = newState;
       setGameState(gameStateEnum.birth);
     } else if (appStateEnum[newState] == 'finished') {
-      myLog("setAppState -> finished");
+      customLogger("setAppState -> finished");
       appState.value = newState;
       setGameState(gameStateEnum.nothing);
       setTimeout(() => {
@@ -167,26 +146,25 @@ export const useTetrisStore = defineStore('tetris', () => {
     }
   }
   function setGameState(newState: gameStateEnum) {
-    myLog("PREPARE TO set Game state to: " + gameStateEnum[newState] + "...");
+    customLogger("PREPARE TO set Game state to: " + gameStateEnum[newState] + "...");
     if (gameStateEnum[newState] == 'birth') {
-      myLog("setGameState -> birth");
+      customLogger("setGameState -> birth");
       elementId.value = nextElementId.value;
-      // elementId.value = 1;
       nextElementId.value = getRandomElementId(allElements.length, elementId.value);
       elementSpin.value = 0;
       prevElementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), -1];
       elementCoords.value = [getMiddlePosition(width.value, allElements[elementId.value][elementSpin.value][0].length), 0];
       renderNewFrame([0,0]);
       if (gameState.value != gameStateEnum.nothing && gameState.value != gameStateEnum.movement) {
-        myLog('setGameState -> birth -> setGameState to movement');
+        customLogger('setGameState -> birth -> setGameState to movement');
         setGameState(gameStateEnum.movement);
       };
     } else if (gameStateEnum[newState] == 'movement') {
-      myLog("setGameState -> movement");
+      customLogger("setGameState -> movement");
       gameState.value = newState;
       startFalling(fallingSpeed.value);
     } else if (gameStateEnum[newState] == 'collision') {
-      myLog("setGameState -> collision");
+      customLogger("setGameState -> collision");
       updateCleaningState();
       if (cleaningState.value.byYAxis.length > 0) {
         clearAllIntervals();
@@ -197,42 +175,42 @@ export const useTetrisStore = defineStore('tetris', () => {
         setGameState(gameStateEnum.birth);
       }
     } else if (gameStateEnum[newState] == 'cleaning') {
-      myLog("setGameState -> cleaning");
+      customLogger("setGameState -> cleaning");
       gameState.value = newState;
     } else if (gameStateEnum[newState] == 'nothing') {
-      myLog("setGameState -> nothing");
+      customLogger("setGameState -> nothing");
       gameState.value = newState;
       stopFalling();
     }
   }
   function updateGameScore(linesWasCleared: number) {
-    myLog("updateGameScore()");
+    customLogger("updateGameScore()");
     score.value += calculateScorePoints(linesWasCleared, speedLevel.value, conf.linesScore);
   }
   function resetGameScore() {
-    myLog("resetGameScore()");
+    customLogger("resetGameScore()");
     score.value = 0 
   }
   function updateFrames() {
-    myLog("updateFrames()");
+    customLogger("updateFrames()");
     frames.value += 1;
   }
   function resetFrames() {
-    myLog("resetFrames()");
+    customLogger("resetFrames()");
     frames.value = -1;
   }
   function backToPrevSpin() {
-    myLog("backToPrevSpin()");
+    customLogger("backToPrevSpin()");
     const nextSpin = elementSpin.value - 1;
     elementSpin.value = allElements[elementId.value][nextSpin] != undefined ? nextSpin : allElements[elementId.value].length - 1;
   }
   function updateSpin() {
-    myLog("updateSpin()");
+    customLogger("updateSpin()");
     const nextSpin = elementSpin.value + 1;
     elementSpin.value = allElements[elementId.value][nextSpin] != undefined ? nextSpin : 0;
   }
   function renderNewFrame(relativeCoords: number[]) {
-    myLog("renderNewFrame()");
+    customLogger("renderNewFrame()");
     // Saving previous coordinates values before updating them to the new state:
     const prevElementCoordsBackup = JSON.parse(JSON.stringify(prevElementCoords.value));
     const elementCoordsBackup = JSON.parse(JSON.stringify(elementCoords.value));
@@ -249,7 +227,7 @@ export const useTetrisStore = defineStore('tetris', () => {
     }
     // If the game is over:
     if (result.isGameOver !== undefined && result.isGameOver) {
-      myLog("renderNewFrame() -> isGameOver !!! app state set to finished");
+      customLogger("renderNewFrame() -> isGameOver !!! app state set to finished");
       setAppState(appStateEnum.finished);
     // If the game still continues:
     } else {
@@ -259,7 +237,7 @@ export const useTetrisStore = defineStore('tetris', () => {
       }
       // Change the game state if we have this order:
       if (result.gameState != gameState.value) {
-        myLog("renderNewFrame -> setGameState to " + gameStateEnum[result.gameState]);
+        customLogger("renderNewFrame -> setGameState to " + gameStateEnum[result.gameState]);
         setGameState(result.gameState);
       }
       // Set previous coordinates as current coordinates if needed:
@@ -269,14 +247,14 @@ export const useTetrisStore = defineStore('tetris', () => {
     }
   }
   function renderNewCleaningFrame() {
-    myLog("renderNewCleaningFrame()");
+    customLogger("renderNewCleaningFrame()");
     const result = renderCleanedFieldMatrix(staticMatrix.value, cleaningState.value);
     staticMatrix.value = result.nextStaticMatrix;
     fieldMatrix.value = result.nextStaticMatrix;
     cleaningState.value = result.nextCleaningState;
     // If cleaning is over:
     if (result.nextCleaningState.byXAxis.length == 0) {
-      myLog("renderNewCleaningFrame() -> cleaning is over");
+      customLogger("renderNewCleaningFrame() -> cleaning is over");
       stopCleaning();
       const newStaticMatrix = combineStaticMatrixPartsInOne({ staticMatrix: result.nextStaticMatrix, lines: result.nextCleaningState.byYAxis });
       staticMatrix.value = newStaticMatrix;
@@ -290,7 +268,7 @@ export const useTetrisStore = defineStore('tetris', () => {
       }, conf.cleaningSpeed);
     // Else - to continue cleaning process:
     } else {
-      myLog("renderNewCleaningFrame() -> continue cleaning...");
+      customLogger("renderNewCleaningFrame() -> continue cleaning...");
       staticMatrix.value = result.nextStaticMatrix;
       fieldMatrix.value = result.nextStaticMatrix;
     }
@@ -306,58 +284,35 @@ export const useTetrisStore = defineStore('tetris', () => {
     }
   }
   function updateSpeedLevel() {
-    myLog("updateSpeedLevel()");
+    customLogger("updateSpeedLevel()");
     if (linesErasedCounter.value >= 10) {
       linesErasedCounter.value -= 10;
       increaseSpeedLevel();
     }
   }
   function elementCoordsUpdate(relativeCoords: number[]) {
-    myLog("elementCoordsUpdate()");
+    customLogger("elementCoordsUpdate()");
     prevElementCoords.value = JSON.parse(JSON.stringify(elementCoords.value));
     elementCoords.value[0] += relativeCoords[0];
     elementCoords.value[1] += relativeCoords[1];
   }
   function updateCleaningState() {
-    myLog("updateCleaningState()");
+    customLogger("updateCleaningState()");
     cleaningState.value = getCleaningStateByStaticMatrix(staticMatrix.value);
   }
   function balanceMovementSpeed(movementSpeedValue: number) {
-    myLog("balanceMovementSpeed()");
+    customLogger("balanceMovementSpeed()");
     return JSON.parse(JSON.stringify((fallingSpeed.value > movementSpeedValue ? conf.movementSpeed : fallingSpeed.value)));
   }
   function setSpeedLevel(newSpeedLevelValue: number) {
-    myLog("setSpeedLevel()");
+    customLogger("setSpeedLevel()");
     speedLevel.value = newSpeedLevelValue;
     fallingSpeed.value = calculateFallingSpeed(newSpeedLevelValue, conf.speedIncreaseFactor);
     movementSpeed.value = balanceMovementSpeed(movementSpeed.value);
   }
   function increaseSpeedLevel() {
-    myLog("increaseSpeedLevel()");
+    customLogger("increaseSpeedLevel()");
     setSpeedLevel(speedLevel.value + 1);
-  }
-  function getStatsInConsole(place: string) {
-    console.log("*************** FRAME # [" + frames.value + "] IN <" + place + "> **************");
-    // console.log("width: " + width.value);
-    // console.log("height: " + height.value);
-    console.log("appState: " + appStateEnum[appState.value]);
-    console.log("gameState: " + gameStateEnum[gameState.value]);
-    // console.log("score: " + score.value);
-    // console.log("fieldMatrixSize: " + fieldMatrix.value[0].length + "/" + fieldMatrix.value.length);
-    // console.log("staticMatrixSize: " + staticMatrix.value[0].length + "/" + staticMatrix.value.length);
-    // console.log("prevElementId: " + prevElementId.value);
-    // console.log("elementId: " + elementId.value);
-    // console.log("elementSpin: " + elementSpin.value);
-    // console.log("prevElementCoords: " + prevElementCoords.value);
-    // console.log("elementCoords: " + elementCoords.value);
-    // console.log("fallingSpeed: " + fallingSpeed.value);
-    console.log("intervalIdFalling: " + intervalIdFalling.value);
-    console.log("intervalIdCleaning: " + intervalIdCleaning.value);
-    // console.log(`keyPressed: { ArrowUp: ${keyPressed.value.ArrowUp}, ArrowLeft: ${keyPressed.value.ArrowLeft}, ArrowRight: ${keyPressed.value.ArrowRight}, ArrowDown: ${keyPressed.value.ArrowDown}, Space: ${keyPressed.value.Space} }`);
-    // console.log(`keyInterval: { ArrowUp: ${keyInterval.value.ArrowUp}, ArrowLeft: ${keyInterval.value.ArrowLeft}, ArrowRight: ${keyInterval.value.ArrowRight}, ArrowDown: ${keyInterval.value.ArrowDown}, Space: ${keyInterval.value.Space} }`);
-    console.log(`keyPressed: { ArrowDown: ${keyPressed.value.ArrowDown} }`);
-    console.log(`keyInterval: { ArrowDown: ${keyInterval.value.ArrowDown} }`);
-    console.log("****************************************");
   }
 
   return { 
@@ -384,6 +339,7 @@ export const useTetrisStore = defineStore('tetris', () => {
     getNextElementId,
     getSpeedLevel,
     getLinesErasedCounter,
+    isEnableLogger,
     goToNextAppState,
     startFalling,
     stopFalling,
@@ -398,7 +354,6 @@ export const useTetrisStore = defineStore('tetris', () => {
     backToPrevSpin,
     updateSpin,
     renderNewFrame,
-    setSpeedLevel,
-    getStatsInConsole
+    setSpeedLevel
   }
 });

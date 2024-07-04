@@ -9,9 +9,7 @@ const tetrisStore = useTetrisStore();
 const name = ref('');
 const newHighScore = ref(false);
 const recordSubmitted = ref(false);
-const apiData: Ref<{ data: { name: string; points: number }[] }> = ref({
-  data: [],
-});
+const apiData: Ref<{ data: { name: string; points: number }[] }> = ref({ data: [], });
 const widthPixels = computed(() => tetrisStore.getWidthPixelsRef());
 const heightPixels = computed(() => tetrisStore.getHeightPixelsRef());
 
@@ -82,10 +80,7 @@ onMounted(async () => {
   <div
     v-if="apiData.data.length > 0"
     class="sub-field"
-    :style="{
-      width: widthPixels.value + 'px',
-      height: heightPixels.value + 'px',
-    }"
+    :style="{ width: widthPixels.value + 'px', height: heightPixels.value + 'px' }"
   >
     <div class="sub-field-in game-over">
       <div v-if="!recordSubmitted" class="title">GAME OVER</div>

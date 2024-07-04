@@ -144,7 +144,6 @@ export function renderFieldMatrix(
   }
 
   if (isGameOver) {
-    // console.log('* GAME OVER');
     return {
       matrix: newFieldMatrix,
       gameState: gameStateEnum.nothing,
@@ -153,7 +152,6 @@ export function renderFieldMatrix(
       isGameOver,
     };
   } else if (!isPossiblePosition) {
-    // console.log('* NOT POSSIBLE POSITION');
     return {
       matrix: fieldMatrix,
       gameState: gameStateEnum.movement,
@@ -161,7 +159,6 @@ export function renderFieldMatrix(
       returnPrevSpin: false,
     };
   } else if (!isPossibleRotation) {
-    // console.log('* NOT POSSIBLE ROTATION');
     return {
       matrix: fieldMatrix,
       gameState: gameStateEnum.movement,
@@ -169,7 +166,6 @@ export function renderFieldMatrix(
       returnPrevSpin: true,
     };
   } else if (isCollision) {
-    // console.log('* IS COLLISION');
     return {
       matrix: fieldMatrix,
       gameState: gameStateEnum.collision,
@@ -177,7 +173,6 @@ export function renderFieldMatrix(
       returnPrevSpin: false,
     };
   } else {
-    // console.log('* CONTINUE MOVEMENT');
     return {
       matrix: newFieldMatrix,
       gameState: gameStateEnum.movement,

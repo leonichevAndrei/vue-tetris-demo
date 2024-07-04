@@ -3,7 +3,9 @@ import { onMounted, onUnmounted, watch } from "vue";
 import { useTetrisStore } from '@/stores/tetris';
 
 export function useKeyEvents() {
+
   const tetrisStore = useTetrisStore();
+
   addEventListeners((event: KeyboardEvent) => {
     if (event.type === 'keydown') {
       if (event.code === 'ArrowLeft' || event.code === 'ArrowRight' || event.code === 'ArrowDown' || event.code === 'Space') {
@@ -32,6 +34,7 @@ export function useKeyEvents() {
       }
     }
   });
+
   function addEventListeners (handler: (event: KeyboardEvent) => void) {
     onMounted(() => {
       document.addEventListener('keydown', handler);
@@ -44,6 +47,7 @@ export function useKeyEvents() {
     watch(() => tetrisStore.getKeyPressed.ArrowUp, key => stopFallingWhileKeyDown(key));
     watch(() => tetrisStore.getKeyPressed.ArrowDown, key => stopFallingWhileKeyDown(key));
   }
+
   function handleKeyPress(key: string) {
     if (appStateEnum[tetrisStore.getAppState] == 'runned' && gameStateEnum[tetrisStore.getGameState] == 'movement') {
       switch (key) {
@@ -65,6 +69,7 @@ export function useKeyEvents() {
       }
     }
   }
+  
   function stopFallingWhileKeyDown(keyState: boolean) {
     if (appStateEnum[tetrisStore.getAppState] == 'runned' && gameStateEnum[tetrisStore.getGameState] == 'movement') {
       if (keyState === true) {
