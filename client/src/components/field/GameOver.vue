@@ -64,12 +64,62 @@ function submitRecord() {
 onMounted(async () => {
   try {
     await getData();
-    if (
-      apiData.value.data.length > 0 &&
-      apiData.value.data[9]?.points < tetrisStore.getScore
-    ) {
-      newHighScore.value = true;
-    }
+    // if (
+    //   apiData.value.data.length > 0 &&
+    //   apiData.value.data[9]?.points < tetrisStore.getScore
+    // ) {
+    //   newHighScore.value = true;
+    // }
+    newHighScore.value = true;
+    // DELETE IT
+
+  //   {
+  //   "data": {
+  //     "data": [
+  //       {
+  //         "name": "Winnie the Pooh",
+  //         "points": 113940
+  //       },
+  //       {
+  //         "name": "Jackie Chan",
+  //         "points": 110580
+  //       },
+  //       {
+  //         "name": "Andrei Leonichev",
+  //         "points": 83480
+  //       },
+  //       {
+  //         "name": "Tim Burton",
+  //         "points": 44000
+  //       },
+  //       {
+  //         "name": "Curt Cobain",
+  //         "points": 21020
+  //       },
+  //       {
+  //         "name": "Iron Man",
+  //         "points": 10000
+  //       },
+  //       {
+  //         "name": "Spider-Man",
+  //         "points": 9000
+  //       },
+  //       {
+  //         "name": "Batman",
+  //         "points": 8000
+  //       },
+  //       {
+  //         "name": "Bruce Lee",
+  //         "points": 7200
+  //       },
+  //       {
+  //         "name": "Superman",
+  //         "points": 7000
+  //       }
+  //     ]
+  //   }
+  // }
+
   } catch (error) {
     console.error('Error in onMounted:', error);
   }
