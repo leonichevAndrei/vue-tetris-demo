@@ -3,7 +3,6 @@ import { computed, ref, onMounted, type Ref } from 'vue';
 import { useTetrisStore } from '@/stores/tetris';
 import axios from 'axios';
 import { addToLeaderboard } from '@/utills/tetris.store.utills';
-import { resetScrollPosition } from '@/utills/common.utills';
 
 const tetrisStore = useTetrisStore();
 
@@ -59,69 +58,18 @@ function submitRecord() {
     );
     updateData(apiData.value);
     recordSubmitted.value = true;
-    resetScrollPosition();
   }
 }
 
 onMounted(async () => {
   try {
     await getData();
-    // if (
-    //   apiData.value.data.length > 0 &&
-    //   apiData.value.data[9]?.points < tetrisStore.getScore
-    // ) {
-    //   newHighScore.value = true;
-    // }
-    newHighScore.value = true;
-    // DELETE IT
-
-  //   {
-  //   "data": {
-  //     "data": [
-  //       {
-  //         "name": "Winnie the Pooh",
-  //         "points": 113940
-  //       },
-  //       {
-  //         "name": "Jackie Chan",
-  //         "points": 110580
-  //       },
-  //       {
-  //         "name": "Andrei Leonichev",
-  //         "points": 83480
-  //       },
-  //       {
-  //         "name": "Tim Burton",
-  //         "points": 44000
-  //       },
-  //       {
-  //         "name": "Curt Cobain",
-  //         "points": 21020
-  //       },
-  //       {
-  //         "name": "Iron Man",
-  //         "points": 10000
-  //       },
-  //       {
-  //         "name": "Spider-Man",
-  //         "points": 9000
-  //       },
-  //       {
-  //         "name": "Batman",
-  //         "points": 8000
-  //       },
-  //       {
-  //         "name": "Bruce Lee",
-  //         "points": 7200
-  //       },
-  //       {
-  //         "name": "Superman",
-  //         "points": 7000
-  //       }
-  //     ]
-  //   }
-  // }
-
+    if (
+      apiData.value.data.length > 0 &&
+      apiData.value.data[9]?.points < tetrisStore.getScore
+    ) {
+      newHighScore.value = true;
+    }
   } catch (error) {
     console.error('Error in onMounted:', error);
   }
