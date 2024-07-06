@@ -3,6 +3,7 @@ import { computed, ref, onMounted, type Ref } from 'vue';
 import { useTetrisStore } from '@/stores/tetris';
 import axios from 'axios';
 import { addToLeaderboard } from '@/utills/tetris.store.utills';
+import { resetScrollPosition } from '@/utills/common.utills';
 
 const tetrisStore = useTetrisStore();
 
@@ -58,6 +59,7 @@ function submitRecord() {
     );
     updateData(apiData.value);
     recordSubmitted.value = true;
+    resetScrollPosition();
   }
 }
 

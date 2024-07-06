@@ -21,6 +21,16 @@ function adjustForKeyboard() {
       document.body.style.position = '';
       document.body.style.top = '';
       window.scrollTo(0, parseInt(scrollY || '0'));
+    });
+  });
+}
+
+// Function to handle form submit
+function handleButtonClick() {
+  const buttons = document.querySelectorAll('button');
+
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
       resetScrollPosition();
     });
   });
@@ -34,7 +44,9 @@ document.addEventListener('visibilitychange', () => {
 });
 window.addEventListener('focus', resetScrollPosition);
 
-// Initialize keyboard adjustments without locking the scroll initially
+// Initialize keyboard adjustments and button click handling
 window.addEventListener('load', () => {
   adjustForKeyboard();
+  handleButtonClick();
+  resetScrollPosition(); // Ensure position is reset on initial load
 });
