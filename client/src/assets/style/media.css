@@ -1,9 +1,9 @@
 @media (max-width: 420px), (max-height: 740px) {
   .menu-item button {
-    width: 378px;
+    width: 386px;
   }
   .control-panel .line .elements-block {
-    width: 378px;
+    width: 386px;
   }
   .element {
     width: 15px;
@@ -26,10 +26,10 @@
 
 @media (max-width: 395px), (max-height: 710px) {
   .menu-item button {
-    width: 360px;
+    width: 368px;
   }
   .control-panel .line .elements-block {
-    width: 360px;
+    width: 368px;
   }
   .element {
     width: 14px;
@@ -52,10 +52,10 @@
 
 @media (max-width: 380px), (max-height: 680px) {
   .menu-item button {
-    width: 342px;
+    width: 350px;
   }
   .control-panel .line .elements-block {
-    width: 342px;
+    width: 350px;
   }
   .element {
     width: 13px;
@@ -78,10 +78,10 @@
 
 @media (max-width: 365px), (max-height: 650px) {
   .menu-item button {
-    width: 324px;
+    width: 332px;
   }
   .control-panel .line .elements-block {
-    width: 324px;
+    width: 332px;
   }
   .element {
     width: 12px;
@@ -104,10 +104,10 @@
 
 @media (max-width: 350px), (max-height: 620px) {
   .menu-item button {
-    width: 306px;
+    width: 314px;
   }
   .control-panel .line .elements-block {
-    width: 306px;
+    width: 314px;
   }
   .element {
     width: 11px;
