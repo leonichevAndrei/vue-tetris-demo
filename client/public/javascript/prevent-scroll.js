@@ -1,21 +1,21 @@
-// Function to reset the scroll position
-function resetScrollPosition() {
-  window.scrollTo(0, 0);
+// Function to prevent scrolling
+function preventDefault(e) {
+  e.preventDefault();
 }
 
-// Handler for the visibilitychange event
-function handleVisibilityChange() {
-  if (document.visibilityState === 'visible') {
-    resetScrollPosition();
-  }
+// Function to lock scroll
+function disableScroll() {
+  document.body.style.overflow = 'hidden';
+  document.addEventListener('touchmove', preventDefault, { passive: false });
 }
 
-// Handler for the focus event
-function handleFocus() {
-  resetScrollPosition();
+// Function to enable scroll
+function enableScroll() {
+  document.body.style.overflow = '';
+  document.removeEventListener('touchmove', preventDefault, { passive: false });
 }
 
-// Function to handle the appearance and hiding of the keyboard
+// Function to handle focus and blur events on input fields
 function adjustForKeyboard() {
   const inputs = document.querySelectorAll('input, textarea, select');
 
@@ -26,29 +26,27 @@ function adjustForKeyboard() {
     });
 
     input.addEventListener('blur', () => {
+      const scrollY = document.body.style.top;
       document.body.style.position = '';
       document.body.style.top = '';
+      window.scrollTo(0, parseInt(scrollY || '0') * -1);
       resetScrollPosition();
     });
   });
 }
 
-// Add event handlers
-document.addEventListener('visibilitychange', handleVisibilityChange);
-window.addEventListener('focus', handleFocus);
-
-// Scroll locking
-function preventDefault(e) {
-  e.preventDefault();
+// Function to reset scroll position
+function resetScrollPosition() {
+  window.scrollTo(0, 0);
 }
 
-function disableScroll() {
-  document.addEventListener('touchmove', preventDefault, { passive: false });
-}
-
-function enableScroll() {
-  document.removeEventListener('touchmove', preventDefault, { passive: false });
-}
+// Event listeners to reset scroll position on visibility change and focus
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    resetScrollPosition();
+  }
+});
+window.addEventListener('focus', resetScrollPosition);
 
 // Initialize scroll locking and keyboard adjustments
 window.addEventListener('load', () => {
