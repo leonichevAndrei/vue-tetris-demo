@@ -1,4 +1,4 @@
-@media (max-width: 420px), (max-height: 740px) {
+@media (max-width: 420px), (orientation: portrait) and (max-height: 740px) {
   .menu-item button {
     width: 386px;
   }
@@ -24,7 +24,7 @@
   }
 }
 
-@media (max-width: 395px), (max-height: 710px) {
+@media (max-width: 395px), (orientation: portrait) and (max-height: 710px) {
   .menu-item button {
     width: 368px;
   }
@@ -50,7 +50,7 @@
   }
 }
 
-@media (max-width: 380px), (max-height: 680px) {
+@media (max-width: 380px), (orientation: portrait) and (max-height: 680px) {
   .menu-item button {
     width: 350px;
   }
@@ -76,7 +76,7 @@
   }
 } 
 
-@media (max-width: 365px), (max-height: 650px) {
+@media (max-width: 365px), (orientation: portrait) and (max-height: 650px) {
   .menu-item button {
     width: 332px;
   }
@@ -102,7 +102,7 @@
   }
 }
 
-@media (max-width: 350px), (max-height: 620px) {
+@media (max-width: 350px), (orientation: portrait) and (max-height: 620px), (orientation: landscape) and (width: 1024px) and (height: 600px) {
   .menu-item button {
     width: 314px;
   }
