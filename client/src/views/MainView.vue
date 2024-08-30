@@ -1,5 +1,5 @@
 <script setup lang='ts'>
-import { computed, type Ref } from 'vue';
+import { computed, onMounted, type Ref } from 'vue';
 import ControlPanel from '@/components/settings/ControlPanel.vue'
 import Field from '@/components/field//Field.vue'
 import TouchControls from '@/components/field/TouchControls.vue';
@@ -13,10 +13,10 @@ import { useTetrisStore } from '@/stores/tetris';
 const tetrisStore = useTetrisStore();
 let width: Ref<number>;
 let height: Ref<number>;
-
 let templateIdForUpdate = computed(() => 'mainViewId' + tetrisStore.getFramesRef().value);
 [width, height] = useDimensionsChange(tetrisStore);
 useKeyEvents();
+onMounted(() => tetrisStore.fetchTopScoreDataAsync());
 </script>
 
 <template>

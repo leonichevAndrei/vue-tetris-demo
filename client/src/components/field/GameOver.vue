@@ -63,7 +63,11 @@ function submitRecord() {
 
 onMounted(async () => {
   try {
-    await getData();
+    if (tetrisStore.getTopScoreData.data.length > 0) {
+      apiData.value = tetrisStore.getTopScoreData;
+    } else {
+      await getData();
+    }
     if (
       apiData.value.data.length > 0 &&
       apiData.value.data[9]?.points < tetrisStore.getScore

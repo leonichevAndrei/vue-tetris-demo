@@ -7,6 +7,7 @@ import { calculateFallingSpeed, calculateScorePoints, getRandomElementId } from 
 import allElements from '@/assets/elements/all-elms';
 import conf from '@/config/tetris.config.ts';
 import { customLogger } from "@/utills/logging.utills";
+import axios from "axios";
 
 export const useTetrisStore = defineStore('tetris', () => {
 
@@ -37,6 +38,7 @@ export const useTetrisStore = defineStore('tetris', () => {
   const cleaningState: Ref<{ byXAxis:number[];byYAxis:number[] }> = ref({ byXAxis:[], byYAxis:[] });
   const linesErasedCounter = ref(0);
   const enableLogger = ref(false);
+  const topScoreData: Ref<{ data: { name: string; points: number }[] }> = ref({data: []});
 
   // GETTERS:
   const getWidth = computed(() => width.value);
@@ -63,6 +65,7 @@ export const useTetrisStore = defineStore('tetris', () => {
   const getSpeedLevel = computed(() => speedLevel.value);
   const getLinesErasedCounter = computed(() => linesErasedCounter.value);
   const isEnableLogger = computed(() => enableLogger.value);
+  const getTopScoreData = computed(() => topScoreData.value);
 
   // ACTIONS:
   function goToNextAppState() {
@@ -128,6 +131,7 @@ export const useTetrisStore = defineStore('tetris', () => {
     customLogger("PREPARE TO set App state to: " + appStateEnum[newState] + "...");
     if (appStateEnum[newState] == 'init') {
       customLogger("setAppState -> init");
+      fetchTopScoreDataAsync();
       appState.value = newState;
       fieldMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes.filled);
       staticMatrix.value = generateAnyFieldMatrix(width.value, height.value, generateFieldTypes.empty);
@@ -314,6 +318,15 @@ export const useTetrisStore = defineStore('tetris', () => {
     customLogger("increaseSpeedLevel()");
     setSpeedLevel(speedLevel.value + 1);
   }
+  async function fetchTopScoreDataAsync() {
+      console.log('fetching...')
+      axios.get('/api/handleData').then(response => {
+        topScoreData.value = response.data;
+      }).catch(error => {
+        console.error('No data in response:', error)
+        topScoreData.value = { data: [] };
+      });
+  }
 
   return { 
     getWidth, 
@@ -340,6 +353,7 @@ export const useTetrisStore = defineStore('tetris', () => {
     getSpeedLevel,
     getLinesErasedCounter,
     isEnableLogger,
+    getTopScoreData,
     goToNextAppState,
     startFalling,
     stopFalling,
@@ -354,6 +368,7 @@ export const useTetrisStore = defineStore('tetris', () => {
     backToPrevSpin,
     updateSpin,
     renderNewFrame,
-    setSpeedLevel
+    setSpeedLevel,
+    fetchTopScoreDataAsync
   }
 });
