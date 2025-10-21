@@ -1,146 +1,185 @@
-# 🎮 Vue 3 Tetris Demo (TypeScript)
+# 🎮 Vue Tetris Demo
 
-**Live Demo:** https://andrei-leonichev-tetris.vercel.app/
-
-A modern **Tetris** clone built with **Vue 3 (script setup + TypeScript)** and **Pinia**.  
-Responsive field, keyboard & touch controls, scoring, line clearing, speed growth, and a clean game loop.
+**Live Demo:** [andrei-leonichev-tetris.vercel.app](https://andrei-leonichev-tetris.vercel.app/)
 
 ---
 
-## ✨ Features
+## 🧩 Overview
 
-- **Vue 3 + TypeScript** Composition API (`script setup`)
-- **Pinia** store for game state
-- **Responsive field size** via custom hook (`useDimensionsChange`)
-- **Keyboard controls** with key-repeat (interval timers)
-- **Touch controls** for mobile
-- Game mechanics: spawn / move / rotate, collision checks, line clearing, scoring, speed increase, game-over overlay
-- Small **Express** API scaffold (see `api/`) for local dev or future persistence
+This is a **classic Tetris clone** built with **Vue 3**, **TypeScript**, and **Vite**.  
+The project demonstrates logic for figure movement, rotation, line clearing, and collision detection,  
+with a minimal backend implemented on **Express** and **Firebase Realtime Database**.
+
+All game logic, UI, and interactions were implemented manually.
 
 ---
 
-## 🧱 Tech Stack
+## 🛠 Tech Stack
 
-- **Vue 3**, **TypeScript**, **Pinia**, **Vue Router**
-- **Vite** for dev/build
-- **Express** (optional dev API)
-- **Prettier** (+ `prettier-plugin-vue`) for formatting
+### Frontend
+- **Vue 3 (Composition API + TypeScript)**
+- **Pinia** — game state management (board, active piece, score)
+- **Vite** — dev/build tool
+- **FontAwesome** — icons
+- **SCSS / CSS Grid** — layout and design
+
+### Backend
+- **Express** — lightweight server for Firebase integration
+- **Firebase Realtime Database** — stores simple player data (e.g. scores)
+- Configured via local `serviceAccountKey.json` (not included in repo)
+
+---
+
+## 🧱 Tetromino Logic
+
+The game includes the 7 classic **Tetris shapes** (I, O, T, J, L, S, Z).  
+Each is defined as a matrix of `1`s and `0`s, representing filled and empty cells.  
+Each shape includes multiple rotation states stored in an array.
+
+Example:
+
+```js
+const element = [
+  [
+    [0,1,0],
+    [1,1,0],
+    [0,1,0],
+  ],
+  [
+    [0,1,0],
+    [1,1,1],
+    [0,0,0]
+  ],
+  [
+    [0,1,0],
+    [0,1,1],
+    [0,1,0]
+  ],
+  [
+    [0,0,0],
+    [1,1,1],
+    [0,1,0]
+  ]
+];
+
+export default element;
+```
+
+Each shape file exports its own rotation array.
+
+---
+
+## 🧩 Core Components
+
+- **Field.vue** — main grid composed of `Column` and `Element` components  
+- **Column.vue** — vertical slice of the playfield  
+- **Element.vue** — individual cell, dynamically rendered as filled or empty  
+- **Control areas** — visual mobile UI for arrows and rotation (via touch events)  
+- **SubField.vue** — overlay with keyboard/touch instructions  
+- **Pinia store** — manages the game state, field matrix, and controls
+
+---
+
+## ⚙️ Project Structure
+
+```
+vue-tetris-demo/
+│
+├── client/
+│   ├── api/
+│   │   ├── server.js              # Express + Firebase backend
+│   │   └── serviceAccountKey.json # Firebase admin key (ignored)
+│   │
+│   ├── src/
+│   │   ├── assets/                # Images & styles
+│   │   ├── components/            # Vue components (Field, Column, Element...)
+│   │   ├── config/                # Tetromino definitions & enums
+│   │   ├── stores/                # Pinia store
+│   │   ├── utills/                # Key event helpers
+│   │   └── views/                 # Main Tetris view
+│   │
+│   ├── App.vue
+│   ├── main.ts
+│   └── index.html
+│
+├── .gitignore
+├── package.json
+└── vite.config.ts
+```
 
 ---
 
 ## 🚀 Getting Started
 
-> Requires **Node 18+**
+> Requires Node.js 18+
 
-### 1) Install
+### 1️⃣ Clone the repository
+
+```bash
+git clone https://github.com/leonichevAndrei/vue-tetris-demo
+cd vue-tetris-demo/client
+```
+
+### 2️⃣ Install dependencies
+
 ```bash
 npm install
 ```
 
-### 2) Run (frontend only)
-```bash
-npm run dev        # starts Vite dev server
-```
-Open the printed URL (usually `http://localhost:5173`).
+### 3️⃣ Run locally
 
-### 3) Run frontend **and** local API together
 ```bash
-npm start          # runs "start-server" (Express) and "dev" in parallel
-```
-- Frontend: Vite dev server
-- API: `node api/server.js`
-
-### 4) Build & Preview
-```bash
-npm run build      # build to /dist
-npm run preview    # serve built files locally
-```
-Optional alternative static servers:
-```bash
-npm run serve             # serve -s dist -l 3500
-npm run http-server:dist  # http-server dist
+npm start
 ```
 
-### 5) Lint / Format
-```bash
-npm run format
-```
+This starts:
+- the **Vite** dev server (frontend)
+- the **Express + Firebase** backend (`api/server.js`)
+
+Then open:  
+👉 http://localhost:5173
 
 ---
 
-## 📁 Project Structure (key parts)
+## 🔒 Firebase Setup
 
-```
-client/                     # (root of this package)
-  api/                      # optional Express API (start with npm run start-server)
-  public/
-  src/
-    assets/
-      elements/             # tetromino shapes & rotations (all-elms)
-    components/
-      field/
-        Field.vue
-        TouchControls.vue
-        ControlsInfo.vue
-        GameOver.vue
-      settings/
-        ControlPanel.vue
-    config/
-      tetris.enums.ts       # appStateEnum, gameStateEnum, field/element types
-    stores/
-      tetris.ts             # Pinia store (game state, speeds, frames, actions)
-    utills/
-      key.events.utills.ts  # keyboard handling (keydown/keyup + intervals)
-      hooks.utills.ts       # useDimensionsChange (responsive field)
-      common.utills.ts      # isTouchDevice(), isMobileDevice()
-    views/ (or root views)
-    App.vue
-    main.ts
-  index.html
-  vite.config.ts
-```
+1. Create a project in [Firebase Console](https://console.firebase.google.com/)
+2. Enable **Realtime Database**
+3. Download the service account key and place it as:  
+   `client/api/serviceAccountKey.json`
+4. Make sure `.gitignore` includes it:
+   ```
+   api/serviceAccountKey.json
+   ```
 
 ---
 
-## 🎹 Controls
+## 🌐 Deployment (Vercel)
 
-**Desktop**
-- ← / → — move
-- ↓ — soft drop
-- **Space** — rotate
-- **Ctrl** — toggle/pause (app state)
-
-*(Movement key repeat handled via intervals in `key.events.utills.ts`.)*
-
-**Mobile**
-- On-screen **TouchControls**
-- Device detection via `isTouchDevice()`
+The project is deployed on **Vercel**, serving the built `dist/` directory.  
+During deployment, `node_modules` may need to remain in the repo to ensure compatibility.  
+The backend connects directly to Firebase for persistent data.
 
 ---
 
-## 🧠 Core Game Logic (overview)
+## 🧩 Possible Improvements
 
-- **Matrix rendering** (`renderFieldMatrix`) merges tetromino with field, detects: collision, invalid position/rotation, **game over**
-- **Line clearing**: `getCleaningStateByStaticMatrix` → `renderCleanedFieldMatrix` → `combineStaticMatrixPartsInOne`
-- **Scoring / speed**: `calculateScorePoints`, `calculateFallingSpeed`, `getMillisecondsByFPS`
-- **Random spawning**: `getRandomElementId`, `getRandomFromX`
-
-On mount, store may fetch top score data:
-```ts
-onMounted(() => tetrisStore.fetchTopScoreDataAsync())
-```
+- Move Firebase configuration into environment variables (`.env`)
+- Load settings dynamically from Firebase or Firestore
+- Add leaderboard and persistent high scores
+- Improve rotation transitions and difficulty curve
 
 ---
 
-## 🛠 Possible Improvements
+## 👨‍💻 Author
 
-- Hard drop / hold piece / next queue
-- Animations & sound for line clear
-- Persist settings & leaderboard (localStorage or API in `api/`)
-- Tests for matrix/rotation utilities
+**Andrei Leonichev**  
+Full-Stack JavaScript / TypeScript Developer  
+📍 Israel | Remote  
+[LinkedIn](https://linkedin.com/in/andrei-leonichev)
 
 ---
 
-## 📝 License
+## 🏷 License
 
-MIT — free to use and modify.
+MIT — free for learning and portfolio use.
