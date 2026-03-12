@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 const serviceAccount = await import(
   path.resolve(__dirname, 'serviceAccountKey.json'),
   {
-    assert: { type: 'json' },
+    with: { type: 'json' },
   }
 );
 
