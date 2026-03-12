@@ -5,18 +5,18 @@ import cors from 'cors';
 import { initializeApp } from 'firebase/app';
 import { getDatabase, ref, get, set } from 'firebase/database';
 import admin from 'firebase-admin';
+import dotenv from 'dotenv';
+dotenv.config();
 
 // Get the current file path
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Import service account JSON file with assertion
-const serviceAccount = await import(
-  path.resolve(__dirname, 'serviceAccountKey.json'),
-  {
-    with: { type: 'json' },
-  }
-);
+const serviceAccount = {
+  projectId: process.env.FIREBASE_PROJECT_ID,
+  clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+  privateKey: process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+};
 
 // Firebase configuration
 const firebaseConfig = {
@@ -35,8 +35,8 @@ const database = getDatabase(app);
 
 // Initialize Firebase Admin
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount.default),
-  databaseURL: firebaseConfig.databaseURL,
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: process.env.FIREBASE_DATABASE_URL,
 });
 
 const server = express();

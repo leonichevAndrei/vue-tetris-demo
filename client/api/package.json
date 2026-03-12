@@ -6,10 +6,10 @@
   "scripts": {
     "start": "node server.js",
     "format": "prettier --write \"src/**/*.{js,jsx,ts,tsx,vue,json,css,scss,md}\""
-
   },
   "dependencies": {
     "cors": "^2.8.5",
+    "dotenv": "^17.3.1",
     "express": "^4.19.2",
     "firebase": "^10.12.2",
     "firebase-admin": "^12.2.0",
